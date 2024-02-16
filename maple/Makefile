@@ -14,8 +14,8 @@ INSTALL_DIR = /usr/local/lib
 
 # ! With setenv DYLD_LIBRARY_PATH=/usr/local/lib for pmlflint.dylib
 
-#LIBS = -lflint -lmpfr -lgmp -lm -lpthread -lpmlflint -lmaplec
-LIBS = -lflint -lmpfr -lgmp -lm -lpthread  -lmaplec
+LIBS = -lflint -lmpfr -lgmp -lm -lpthread -lpmlflint -lmaplec
+#LIBS = -lflint -lmpfr -lgmp -lm -lpthread  -lmaplec
 LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib -L$(MAPLE_LIBDIR) 
 
 .SUFFIXES: .o .c

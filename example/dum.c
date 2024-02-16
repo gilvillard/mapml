@@ -54,7 +54,7 @@ int main(int argc, char ** argv)
 
     nmod_poly_mat_t mat;
     nmod_poly_mat_init(mat, 4, 4 , 2);
-    nmod_poly_mat_rand(mat, state, 2);
+    nmod_poly_mat_rand(mat, state, 4);
 
 
     nmod_poly_t det;

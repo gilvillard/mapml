@@ -7,6 +7,10 @@
 
 #include "nmod_poly_mat_extra.h"
 
+// ******** Mettre des const **********
+
+// ******** VOIR POUR LE MODULO *******
+
 
 // Todo use a list for converting 
 //    --> Cf linbox  lb-maple.C. lbConvertPolynomial
@@ -29,11 +33,28 @@ ALGEB to_maple_nmod_poly(MKernelVector kv, nmod_poly_t p){
     return maple_p;   
 }
 
+ALGEB to_maple_nmod_poly_mat(MKernelVector kv, nmod_poly_mat_t A){
+
+    ALGEB maple_A; 
+
+    slong d = nmod_poly_degree(p);
+
+    maple_p = ToMapleInteger(kv,nmod_poly_get_coeff_ui(p, 0));
+
+    ALGEB f = EvalMapleStatement(kv,"proc(pol,cc,dd) return (pol +cc*x^dd); end proc;");
+
+    for (slong i = 1; i <= d; i++) 
+        maple_p = EvalMapleProc(kv, f, 3, maple_p, ToMapleInteger(kv,nmod_poly_get_coeff_ui(p, i)),ToMapleInteger(kv,i));
+
+    return maple_p;   
+}
+
+
 // MapleToInteger64 vs slong and ulong 
 // From a maple list args[1], [... , degree, coeff...], args[2] = length/2, nb of monomials 
 // modulus assigned somewhere else 
 
-void get_nmod_poly(nmod_poly_t p, MKernelVector kv, ALGEB *args){
+void get_nmod_poly_b(nmod_poly_t p, MKernelVector kv, ALGEB *args){
 
     ALGEB coeffs = args[1]; // Work with coeffs in input? 
 
@@ -47,6 +68,14 @@ void get_nmod_poly(nmod_poly_t p, MKernelVector kv, ALGEB *args){
                                MapleToInteger64(kv,MapleListSelect(kv,coeffs,2*i+2)));
 
     }
+}
+
+// From a string at the flint format 
+
+void get_nmod_poly(nmod_poly_t p, MKernelVector kv, ALGEB *args){ 
+
+    nmod_poly_set_str(p, MapleToString(kv,args[1]));
+
 }
 
 

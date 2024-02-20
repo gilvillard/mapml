@@ -18,6 +18,10 @@ DEFAULT_CPPFLAGS="-O3 -Wall -I/usr/local/include"
 
 CPPFLAGS=${CPPFLAGS:-$DEFAULT_CPPFLAGS}
 
+DEFAULT_LDFLAGS="-L/usr/local/lib"
+
+LDFLAGS=${LDFLAGS:-$DEFAULT_LDFLAGS}
+
 #Defaults 
 
 
@@ -55,6 +59,10 @@ CHECK_ATOMIC()
 AS_BOX([          mapml config               ])
 #################################################
 
+
+# Check gmp
+#----------
+
 AC_ARG_WITH(gmp,
       AS_HELP_STRING([--with-gmp=@<:@=DIR@:>@], [GMP install directory]), [
          CPPFLAGS="$CPPFLAGS -I$withval/include"
@@ -65,21 +73,78 @@ AC_CHECK_LIB(gmp, __gmp_get_memory_functions, , [AC_MSG_ERROR(
    [GMP version >= 4.2.0 needed, see http://gmplib.org])])
 
 
+# Check flint
+#------------
+
+AC_ARG_WITH(flint,
+      AS_HELP_STRING([--with-flint=@<:@=DIR@:>@], [Flint install directory]), [
+         CPPFLAGS="$CPPFLAGS -I$withval/include"
+         LDFLAGS="$LDFLAGS -L$withval/lib"
+      ])
+
+AC_CHECK_LIB(flint, __flint_get_memory_functions, , [AC_MSG_ERROR(
+   [ERROR FLINT])])
+
+LIBS="$LIBS -lm -lpthread"
+
+# Check pml
+#----------
+
+AC_ARG_WITH(pml,
+      AS_HELP_STRING([--with-pml=@<:@=DIR@:>@], [PML install directory]), [
+         PML_INCDIR="$withval/include"
+         PML_LIBDIR="$withval/lib"
+      ])
+
+CPPFLAGS="$CPPFLAGS -I${PML_INCDIR}"
+
+LIBS="$LIBS -lpmlflint"
+
+
+AC_CHECK_FILE([$PML_INCDIR/nmod_extra.h],
+                [AC_DEFINE([HAVE_PML], [1],
+                [with nmod_extra.h])],
+                [AC_MSG_ERROR([Sorry, PML nmod_extra.h location missing])],
+                [])
+
+AC_SUBST(PML_INCDIR)
+AC_SUBST(PML_LIBDIR)
+
+
+# Check maple
+#------------
+
 AC_ARG_WITH(maplec,
       AS_HELP_STRING([--with-maplec=@<:@=DIR@:>@], [Maple include]), [
-         MAPLE_INCDIR="$withval"
+         MAPLE_INCDIR="$withval/include"
       ])
 
 
 CPPFLAGS="$CPPFLAGS -I${MAPLE_INCDIR}"
 
-
 AC_CHECK_HEADER([maplec.h],
-                [AC_DEFINE([HAVE], [1],
+                [AC_DEFINE([HAVE_MAPLEC], [1],
                    [with maplec.h])],
                 [AC_MSG_ERROR([Sorry, maplec.h location missing])])
 
+# Note: no lib directory here 
+
 AC_SUBST(MAPLE_INCDIR)
+
+AC_ARG_WITH(maplelib,
+      AS_HELP_STRING([--with-maplelib=@<:@=DIR@:>@], [Maple lib]), [
+         MAPLE_LIBDIR="$withval"
+      ])
+
+
+LDFLAGS="$LDFLAGS -L${MAPLE_LIBDIR}"
+LIBS="$LIBS -lmaplec"
+
+#GV Does not seem to work, howto do ? 
+
+#AC_CHECK_LIB(maplec, __EvalMapleProc, , [AC_MSG_ERROR(
+ #  [ERROR MAPLELIB])])
+
 
 AS_ECHO(["##--------------------------------------##"])
 

@@ -7,3 +7,4 @@ SUBDIRS= maple
 pkgconfigdir = $(libdir)/pkgconfig
 
 include_mapmldir=$(includedir)/mapml
+

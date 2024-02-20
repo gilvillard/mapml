@@ -30,8 +30,8 @@ LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib -L$(MAPLE_LIBDIR)
 %.o: %.c 
 	$(CC) -c $*.c  $(CFLAGS)
 
-shared: dum.o
-	$(CC) -shared -fPIC -o dum.dylib dum.o $(OBJS) $(CFLAGS)  $(LDFLAGS) $(LIBS)
+shared: conversion.o
+	$(CC) -shared -fPIC -o libmapml.dylib conversion.o $(OBJS) $(CFLAGS)  $(LDFLAGS) $(LIBS)
 	#$(CC) -shared -fPIC -o dum.dylib dum.o $(CFLAGS)  $(LDFLAGS) $(LIBS)
 
 install:

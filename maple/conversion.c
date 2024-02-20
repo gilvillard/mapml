@@ -112,7 +112,6 @@ ALGEB pget(MKernelVector kv, ALGEB *args){
 }
 
 
-
 // !!!!  Modulus
 
 void get_nmod_poly_mat(nmod_poly_mat_t A,   MKernelVector kv, ALGEB maple_A){

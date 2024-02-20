@@ -92,3 +92,8 @@ autom4te.cache/traces.16
 autom4te.cache/traces.17
 autom4te.cache/traces.18
 autom4te.cache/traces.19
+m4/libtool.m4
+m4/ltoptions.m4
+m4/ltsugar.m4
+m4/ltversion.m4
+m4/lt~obsolete.m4

@@ -14,9 +14,15 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_CONFIG_HEADERS([maple/config.h])
 
-DEFAULT_CXXFLAGS="-O3 -Wall -I/usr/local/include"
+DEFAULT_CPPFLAGS="-O3 -Wall -I/usr/local/include"
 
-CXXFLAGS=${CXXFLAGS:-$DEFAULT_CXXFLAGS}
+CPPFLAGS=${CPPFLAGS:-$DEFAULT_CPPFLAGS}
+
+#Defaults 
+
+
+AC_SUBST(MAPLE_INCDIR,"/Library/Frameworks/Maple.framework/Versions/2023/extern/include")
+AC_SUBST(MAPLE_LIBDIR,"/Library/Frameworks/Maple.framework/Versions/2023/bin.APPLE_ARM64_MACOS")
 
 LT_INIT
 
@@ -45,18 +51,37 @@ AC_CHECK_FUNCS([floor pow rint sqrt strtol])
 
 CHECK_ATOMIC()
 
+#################################################
+AS_BOX([          mapml config               ])
+#################################################
+
 AC_ARG_WITH(gmp,
       AS_HELP_STRING([--with-gmp=@<:@=DIR@:>@], [GMP install directory]), [
-         CPPFLAGS="$CXXFLAGS -I$withval/include"
+         CPPFLAGS="$CPPFLAGS -I$withval/include"
          LDFLAGS="$LDFLAGS -L$withval/lib"
-         mpir_lib_path="$withval/lib"
       ])
+
 AC_CHECK_LIB(gmp, __gmp_get_memory_functions, , [AC_MSG_ERROR(
    [GMP version >= 4.2.0 needed, see http://gmplib.org])])
 
 
+AC_ARG_WITH(maplec,
+      AS_HELP_STRING([--with-maplec=@<:@=DIR@:>@], [Maple include]), [
+         MAPLE_INCDIR="$withval"
+      ])
 
 
+CPPFLAGS="$CPPFLAGS -I${MAPLE_INCDIR}"
+
+
+AC_CHECK_HEADER([maplec.h],
+                [AC_DEFINE([HAVE], [1],
+                   [with maplec.h])],
+                [AC_MSG_ERROR([Sorry, maplec.h location missing])])
+
+AC_SUBST(MAPLE_INCDIR)
+
+AS_ECHO(["##--------------------------------------##"])
 
 AC_CONFIG_FILES([Makefile maple/Makefile])
 

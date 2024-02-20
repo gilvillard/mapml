@@ -1,6 +1,6 @@
 
 
-ACLOCAL_AMFLAGS = -I macros
+ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS= maple 
 

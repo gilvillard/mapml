@@ -168,7 +168,7 @@ LIBS="$LIBS -lmaplec"
 
 AS_ECHO(["##--------------------------------------##"])
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile maple/Makefile])
 
 
 AC_OUTPUT

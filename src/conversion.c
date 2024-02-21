@@ -14,14 +14,6 @@
    You should have received a copy of the GNU Lesser General Public License
    along with mapml. If not, see <http://www.gnu.org/licenses/>. */
 
-
-// ******** Mettre des const **********
-
-// ******** VOIR POUR LE MODULO *******
-
-// Todo variable x 
-
-// Voir où les initialisations 
 // *******************************************************
 
 

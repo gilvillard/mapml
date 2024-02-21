@@ -1,0 +1,80 @@
+/* 
+   Copyright (C) 2024 Gilles Villard
+
+   This file is part of mapml. mapml is free software: you
+   can redistribute it and/or modify it under the terms of the GNU Lesser
+   General Public License as published by the Free Software Foundation,
+   either version 2.1 of the License, or (at your option) any later version.
+
+   mapml is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   GNU Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public License
+   along with mapml. If not, see <http://www.gnu.org/licenses/>. */
+
+// *******************************************************
+
+
+#ifndef MAPML_CONVERSION_H
+#define MAPML_CONVERSION_H
+
+
+#include "mapml.h"
+
+
+/**********************************************************
+ * 
+ * Converts an nmod_poly_t to its maple equivalent 
+ *   !! no modulus is transmitted
+ * 
+ * Todo: use a list instead, cf linbox  lb-maple.C. lbConvertPolynomial
+ * 
+ *********************************************************/
+
+
+ALGEB nmod_poly_to_algeb(MKernelVector kv, const nmod_poly_t p);
+
+
+/**********************************************************
+ * 
+ * Converts an nmod_poly_mat to its maple equivalent 
+ *   !! no modulus is transmitted
+ * 
+ ***********************************************************/
+
+ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A);
+
+
+/**********************************************************
+ * 
+ * Converts a maple string polynomial representation 
+ *  [deg+1  modulus coefficients]
+ *  to an nmod_poly_t t  
+ * 
+ *  ALGEB stringpol: a string
+ * 
+ ***********************************************************/
+
+void get_nmod_poly(nmod_poly_t p, const mp_limb_t modulus, MKernelVector kv, ALGEB stringpol);
+
+
+/**********************************************************
+ * 
+ * Converts a maple string polynomial matrix representation 
+ *  [i,j][deg+1  modulus coefficients]
+ *  to an nmod_poly_mat_t   
+ * 
+ *  ALGEB string_A: a matrix of strings
+ * 
+ ***********************************************************/
+
+
+void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A); 
+
+
+#endif
+
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

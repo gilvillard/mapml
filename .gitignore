@@ -104,3 +104,5 @@ maple/.deps/libmapml.Po
 src/.deps/conversion.Plo
 src/.deps/dum.Tpo
 src/.deps/libmapml.Po
+src/.deps/check_tools.Plo
+src/.deps/dummy_export.Plo

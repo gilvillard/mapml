@@ -15,25 +15,35 @@
    along with mapml. If not, see <http://www.gnu.org/licenses/>. */
 
 
-#ifndef MAPML_CONVERSION_H
-#define MAPML_CONVERSION_H
-
-
-#include "mapml.h"
-
 // ******** Mettre des const **********
 
 // ******** VOIR POUR LE MODULO *******
 
-
-// Todo use a list for converting 
-//    --> Cf linbox  lb-maple.C. lbConvertPolynomial
-
 // Todo variable x 
 
 // Voir où les initialisations 
+// *******************************************************
 
-ALGEB to_maple_nmod_poly(MKernelVector kv, nmod_poly_t p){
+
+#ifndef MAPML_CONVERSION_C
+#define MAPML_CONVERSION_C
+
+
+#include "mapml.h"
+#include "conversion.h"
+
+
+/**********************************************************
+ * 
+ * Converts an nmod_poly_t to its maple equivalent 
+ *   !! no modulus is transmitted
+ * 
+ * Todo: use a list instead, cf linbox  lb-maple.C. lbConvertPolynomial
+ * 
+ *********************************************************/
+
+
+ALGEB nmod_poly_to_algeb(MKernelVector kv, const nmod_poly_t p){
 
     ALGEB maple_p; 
 
@@ -41,7 +51,7 @@ ALGEB to_maple_nmod_poly(MKernelVector kv, nmod_poly_t p){
 
     maple_p = ToMapleInteger(kv,nmod_poly_get_coeff_ui(p, 0));
 
-    ALGEB f = EvalMapleStatement(kv,"proc(pol,cc,dd) return (pol +cc*x^dd); end proc;");
+    ALGEB f = EvalMapleStatement(kv,"proc(pol,c,d) return (pol +c*x^d); end proc;");
 
     for (slong i = 1; i <= d; i++) 
         maple_p = EvalMapleProc(kv, f, 3, maple_p, ToMapleInteger(kv,nmod_poly_get_coeff_ui(p, i)),ToMapleInteger(kv,i));
@@ -49,7 +59,15 @@ ALGEB to_maple_nmod_poly(MKernelVector kv, nmod_poly_t p){
     return maple_p;   
 }
 
-ALGEB to_maple_nmod_poly_mat(MKernelVector kv, nmod_poly_mat_t A){
+
+/**********************************************************
+ * 
+ * Converts an nmod_poly_mat to its maple equivalent 
+ *   !! no modulus is transmitted
+ * 
+ ***********************************************************/
+
+ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A){
 
     ALGEB maple_A; 
 
@@ -79,7 +97,7 @@ ALGEB to_maple_nmod_poly_mat(MKernelVector kv, nmod_poly_mat_t A){
             index[0]=i;
             index[1]=j;
 
-            tmp.dag =  to_maple_nmod_poly(kv, nmod_poly_mat_entry(A,i-1,j-1));
+            tmp.dag =  nmod_poly_to_algeb(kv, nmod_poly_mat_entry(A,i-1,j-1));
 
             RTableAssign(kv, maple_A, index, tmp);
         }
@@ -89,63 +107,69 @@ ALGEB to_maple_nmod_poly_mat(MKernelVector kv, nmod_poly_mat_t A){
     }
 
 
+/**********************************************************
+ * 
+ * Converts a maple string polynomial representation 
+ *  [deg+1  modulus coefficients]
+ *  to an nmod_poly_t t  
+ * 
+ *  ALGEB stringpol: a string
+ * 
+ ***********************************************************/
+
+void get_nmod_poly(nmod_poly_t p, const mp_limb_t modulus, MKernelVector kv, ALGEB stringpol){ 
+
+    nmod_poly_init(p, modulus);
+
+    nmod_poly_set_str(p, MapleToString(kv,stringpol));
+
+}
+
 
 // MapleToInteger64 vs slong and ulong 
 // From a maple list args[1], [... , degree, coeff...], args[2] = length/2, nb of monomials 
 // modulus assigned somewhere else 
 
-    void get_nmod_poly_b(nmod_poly_t p, MKernelVector kv, ALGEB *args){
+// void get_nmod_poly_b(nmod_poly_t p, MKernelVector kv, ALGEB *args){
 
-    ALGEB coeffs = args[1]; // Work with coeffs in input? 
+//     ALGEB coeffs = args[1]; // Work with coeffs in input? 
 
-    M_INT l = MapleToInteger64(kv,args[2]);
+//     M_INT l = MapleToInteger64(kv,args[2]);
 
-    MapleALGEB_Printf(kv, " Length %a", ToMapleInteger(kv,l));
+//     MapleALGEB_Printf(kv, " Length %a", ToMapleInteger(kv,l));
 
-    for (M_INT i=0; i<l; i++) {
+//     for (M_INT i=0; i<l; i++) {
 
-        nmod_poly_set_coeff_ui(p, MapleToInteger64(kv,MapleListSelect(kv,coeffs,2*i+1)), 
-           MapleToInteger64(kv,MapleListSelect(kv,coeffs,2*i+2)));
+//         nmod_poly_set_coeff_ui(p, MapleToInteger64(kv,MapleListSelect(kv,coeffs,2*i+1)), 
+//            MapleToInteger64(kv,MapleListSelect(kv,coeffs,2*i+2)));
 
-    }
-}
-
-// From a string at the flint format 
-
-void get_nmod_poly(nmod_poly_t p, MKernelVector kv, ALGEB pol){ 
-
-    nmod_poly_set_str(p, MapleToString(kv,pol));
-
-}
+//     }
+// }
 
 
-ALGEB pget(MKernelVector kv, ALGEB *args){
-
-    nmod_poly_t p;
-
-    nmod_poly_init(p, 13);
-
-    get_nmod_poly(p, kv, args[1]);
-    
-    return to_maple_nmod_poly(kv,p);
-
-}
+/**********************************************************
+ * 
+ * Converts a maple string polynomial matrix representation 
+ *  [i,j][deg+1  modulus coefficients]
+ *  to an nmod_poly_mat_t   
+ * 
+ *  ALGEB string_A: a matrix of strings
+ * 
+ ***********************************************************/
 
 
-// !!!!  Modulus
-
-void get_nmod_poly_mat(nmod_poly_mat_t A,   MKernelVector kv, ALGEB maple_A){
+void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A){
 
 
     //ALGEB maple_A = args[1]; // Doesn't work with P in input? 
 
     M_INT m,n;   // slong flint or M_INT ? 
 
-    m = RTableUpperBound(kv, maple_A, 1);
+    m = RTableUpperBound(kv, string_A, 1);
 
-    n = RTableUpperBound(kv, maple_A, 2);
+    n = RTableUpperBound(kv, string_A, 2);
 
-    nmod_poly_mat_init(A, m, n , 13);
+    nmod_poly_mat_init(A, m, n , modulus); // Initializes the polynomials 
 
     M_INT index[2];
 
@@ -156,8 +180,9 @@ void get_nmod_poly_mat(nmod_poly_mat_t A,   MKernelVector kv, ALGEB maple_A){
 
             index[0]=i;
             index[1]=j;
-            tmp = RTableSelect(kv,maple_A,index);
+            tmp = RTableSelect(kv,string_A,index);
 
+            // polynomials have been initialized 
             nmod_poly_set_str(nmod_poly_mat_entry(A,i-1,j-1), MapleToString(kv,tmp.dag));
 
         }
@@ -165,16 +190,6 @@ void get_nmod_poly_mat(nmod_poly_mat_t A,   MKernelVector kv, ALGEB maple_A){
 
 }
 
-
-ALGEB mget(MKernelVector kv, ALGEB *args){
-
-    nmod_poly_mat_t A;
-
-    get_nmod_poly_mat(A, kv, args[1]);
-    
-    return to_maple_nmod_poly_mat(kv,A);
-
-}
 
 #endif
 

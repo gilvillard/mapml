@@ -20,11 +20,11 @@ AUTOMAKE_OPTIONS = gnu
 include_mapmldir= $(includedir)/mapml
 
 
-include_mapml_HEADERS=  mapml.h
+include_mapml_HEADERS=  mapml.h conversion.h
 
 lib_LTLIBRARIES = libmapml.la
 
-libmapml_la_SOURCES= mapml.h conversion.c 
+libmapml_la_SOURCES= mapml.h conversion.h conversion.c dummy_export.c
 
 #libmapml_la_LIBADD=/usr/local/lib/libpmlflint.dylib
 

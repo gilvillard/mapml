@@ -1,9 +1,29 @@
+
+# 
+# Copyright (C) 2024 Gilles Villard
+#
+# Created from https://github.com/fplll/fplll/blob/master/configure.ac
+#
+#   This file is part of mapml. mapml is free software: you
+#   can redistribute it and/or modify it under the terms of the GNU Lesser
+#   General Public License as published by the Free Software Foundation,
+#   either version 2.1 of the License, or (at your option) any later version.
+#
+#   mapml is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#   GNU Lesser General Public License for more details.
+#
+#   You should have received a copy of the GNU Lesser General Public License
+#   along with mapml. If not, see <http://www.gnu.org/licenses/>. 
+
+
 # -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
 AC_INIT([mapml],[0.0.1])
-AC_CONFIG_SRCDIR([maple/conversion.c])
+AC_CONFIG_SRCDIR([src/conversion.c])
 AM_MAINTAINER_MODE([enable])
 AC_CANONICAL_TARGET
 
@@ -12,7 +32,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
-AC_CONFIG_HEADERS([maple/config.h])
+AC_CONFIG_HEADERS([src/config.h])
 
 DEFAULT_CPPFLAGS="-O3 -Wall -I/usr/local/include"
 
@@ -148,7 +168,7 @@ LIBS="$LIBS -lmaplec"
 
 AS_ECHO(["##--------------------------------------##"])
 
-AC_CONFIG_FILES([Makefile maple/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile])
 
 
 AC_OUTPUT

@@ -101,3 +101,6 @@ maple/.deps/conversion.Plo
 maple/.deps/dum.Plo
 maple/.deps/dum.Tpo
 maple/.deps/libmapml.Po
+src/.deps/conversion.Plo
+src/.deps/dum.Tpo
+src/.deps/libmapml.Po

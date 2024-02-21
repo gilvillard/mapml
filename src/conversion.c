@@ -1,5 +1,9 @@
 
-#include "conversion.h"
+#ifndef MAPML_CONVERSION_H
+#define MAPML_CONVERSION_H
+
+
+#include "mapml.h"
 
 // ******** Mettre des const **********
 
@@ -156,6 +160,7 @@ ALGEB mget(MKernelVector kv, ALGEB *args){
 
 }
 
+#endif
 
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 // vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

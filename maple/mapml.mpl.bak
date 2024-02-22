@@ -7,11 +7,21 @@ mapml:= module()
 
         description "XXX";
 
-	local pmlflintpath, mapmlpath, pmlflint_lib, mapml_lib, ff:
+	local pmlflintpath, mapmlpath, pmlflint_lib, mapml_lib, ff, 
+	      tottest, succeeded;
 
 	export pm_check_io,Dev:
 
-	local convertpol,matpoly_rt;
+	# Local functions 
+	# ---------------
+
+	local convertpol; 
+
+
+	# High level submodule functions 
+	# ------------------------------
+
+	local matpoly_rt;
 
 
 	option package, load=Init, unload=End: 
@@ -42,6 +52,10 @@ mapml:= module()
     
 	ff:=define_external("nmod_poly_mat_init", MAPLE, LIB = pmlflint_lib):
 		
+
+	# Local functions for conversions
+	# -------------------------------
+
 
 	convertpol:=proc(p,modulus) local d,i,ll; if (degree(p) <0) then d:=-1: else d:=degree(p) fi:   
     	ll:=sprintf("%a %a", d+1,modulus); 
@@ -75,6 +89,9 @@ mapml:= module()
 	#  Test functions  
 	#  --------------
 
+	tottest:=0: succeeded:=0:
+
+
 	matpoly_rt:=proc(A,modulus) local stringA;
 
    		stringA:=map(t->convertpol(t,modulus),A);
@@ -95,9 +112,37 @@ mapml:= module()
 
 		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
 
+		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+		q:=2;
+		m:=20; n:=16; 
+		Z:=Matrix(m,n,0);
+		rr:=t->randpoly(x,degree=8) mod q:
+		A:=RandomMatrix(m,n,generator=rr);
+		B:=matpoly_rt(A,q);
+
+		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+
+		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+
+
+		q:=179424673;
+		m:=20; n:=16; 
+		Z:=Matrix(m,n,0);
+		rr:=t->randpoly(x,degree=8) mod q:
+		A:=RandomMatrix(m,n,generator=rr);
+		B:=matpoly_rt(A,q);
+
+		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+
+		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+
+
+        printf("%d tests passed, over %d",succeeded,tottest);
+
 		return(val);
-
-
 
 	end proc: 
 

@@ -110,13 +110,16 @@ LIBS="$LIBS -lm -lpthread"
 # Check pml
 #----------
 
+#GV bien voir pour cette bibliothèque 
+
 AC_ARG_WITH(pml,
       AS_HELP_STRING([--with-pml=@<:@=DIR@:>@], [PML install directory]), [
          PML_INCDIR="$withval/include"
-         PML_LIBDIR="$withval/lib"
+         PML_LIBDIR="$withval"
       ])
 
 CPPFLAGS="$CPPFLAGS -I${PML_INCDIR}"
+LDFLAGS="$LDFLAGS -L${PML_LIBDIR}"
 
 LIBS="$LIBS -lpmlflint"
 

@@ -17,9 +17,9 @@ mapml:= module()
 	option package, load=Init, unload=End: 
 	
 	
-	pmlflintpath := "/Users/gvillard/univ-linalg/flint-extras"; 
+	pmlflintpath := "path1"; 
 
-	mapmlpath := "/usr/local";
+	mapmlpath := "path2";
 
 	pmlflint_lib := cat(pmlflintpath,"/libpmlflint.dylib");
         mapml_lib := cat(mapmlpath,"/lib/libmapml.dylib");

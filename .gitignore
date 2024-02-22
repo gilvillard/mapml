@@ -108,3 +108,6 @@ src/.deps/check_tools.Plo
 src/.deps/dummy_export.Plo
 src/.deps/matpoly.Plo
 src/.deps/matpoly_export.Plo
+config.log
+src/config.h
+src/config.h.in

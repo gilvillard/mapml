@@ -106,3 +106,5 @@ src/.deps/dum.Tpo
 src/.deps/libmapml.Po
 src/.deps/check_tools.Plo
 src/.deps/dummy_export.Plo
+src/.deps/matpoly.Plo
+src/.deps/matpoly_export.Plo

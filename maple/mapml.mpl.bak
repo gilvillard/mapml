@@ -10,18 +10,20 @@ mapml:= module()
 	local pmlflintpath, mapmlpath, pmlflint_lib, mapml_lib, ff, 
 	      tottest, succeeded;
 
-	export pm_check_io,Dev:
+	
 
 	# Local functions 
 	# ---------------
 
 	local convertpol; 
 
+	local matpoly_rt;
 
 	# High level submodule functions 
 	# ------------------------------
 
-	local matpoly_rt;
+	export pmCheck_Io, pmDeterminant, pmCheck_Determinant, Dev:
+
 
 
 	option package, load=Init, unload=End: 
@@ -72,19 +74,29 @@ mapml:= module()
 
 	    description "YYY";
 
-		export matpoly_rt;					
+		export matpoly_rt, pm_determinant;					
 
 		matpoly_rt := define_external("matpoly_rt",MAPLE, LIB = mapml_lib);
 
+		pm_determinant := define_external("pm_determinant",MAPLE, LIB = mapml_lib);
 
 	end module: 	
+
+
 
 
 	#  Definition of the high level submodule 
 	#  --------------------------------------
 
+	pmDeterminant :=proc(A,q) local t,stringA; 
 
+		stringA:=map(t->convertpol(t,q),A);
 
+		return Dev:-pm_determinant(stringA,q);
+
+	end proc: 
+
+		
 
 	#  Test functions  
 	#  --------------
@@ -92,6 +104,33 @@ mapml:= module()
 	tottest:=0: succeeded:=0:
 
 
+	# export
+	pmCheck_Determinant :=proc() local rr,A,val,q,n,d1,d2;
+
+		tottest:=0: succeeded:=0: # GV here or global ? 
+
+		q:=11;
+		n:=4; 
+		
+		rr:=t->randpoly(x,degree=2) mod q:
+		A:=RandomMatrix(n,n,generator=rr);
+		
+		d1:=pmDeterminant(A,q);
+
+		d2:=Determinant(A) mod q;
+
+		val:= expand(d1-d1) mod q;
+
+		if (val=0) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+
+        printf("%d tests passed, over %d",succeeded,tottest);
+
+		return(val);
+
+	end proc: 
+
+	# local
 	matpoly_rt:=proc(A,modulus) local stringA;
 
    		stringA:=map(t->convertpol(t,modulus),A);
@@ -100,8 +139,10 @@ mapml:= module()
 
 	end proc:
 
+	# export
+	pmCheck_Io :=proc() local rr,t,A,B,Z,val,q,m,n;
 
-	pm_check_io :=proc() local rr,t,A,B,Z,val,q,m,n;
+		tottest:=0: succeeded:=0: # GV here or global ? 
 
 		q:=11;
 		m:=2; n:=4; 
@@ -115,7 +156,7 @@ mapml:= module()
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
 		q:=2;
-		m:=20; n:=16; 
+		m:=40; n:=44; 
 		Z:=Matrix(m,n,0);
 		rr:=t->randpoly(x,degree=8) mod q:
 		A:=RandomMatrix(m,n,generator=rr);

@@ -17,8 +17,8 @@
 // *******************************************************
 
 
-#ifndef MAPML_DUMMY_EXPORT_C
-#define MAPML_DUMMY_EXPORT_C
+#ifndef MAPML_MATPOLY_EXPORT_C
+#define MAPML_MATPOLY_EXPORT_C
 
 
 #include "mapml.h"
@@ -28,51 +28,15 @@
 
 /**********************************************************
  * 
- * maple polynomial round trip (for cheks) 
+ * modulo matrix polynomial determinant  
  * 
- * Converts a maple string polynomial representation 
- *  [deg+1  modulus coefficients]
- *  back to a maple polynomial   
- * 
- *  ALGEB args[1]: polynomial string 
+ *  ALGEB args[1]: matrix polynomial string 
  *        args[2]: modulus 
  * 
  ***********************************************************/
 
 
-ALGEB polynomial_rt(MKernelVector kv, ALGEB *args){
-
-    ALGEB stringpol=args[1];
-
-    mp_limb_t modulus = MapleToInteger64(kv,args[2]);
-
-    nmod_poly_t p;  
-    // The polynomial is initialized by nmod_poly_to_algeb
-
-    get_nmod_poly(p, modulus, kv, stringpol);
-    
-    return nmod_poly_to_algeb(kv,p);
-
-}
-
-
-/**********************************************************
- * 
- * maple polynomial round trip (for cheks) 
- * 
- * Converts a maple string polynomial representation 
- *  [deg+1  modulus coefficients]
- *  back to a maple polynomial   
- * 
- *  
- *  ALGEB args[1]: polynomial matrix of string 
- *        args[2]: modulus 
- * 
- * 
- ***********************************************************/
-
-
-ALGEB matpoly_rt(MKernelVector kv, ALGEB *args){
+ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
 
     ALGEB stringmat=args[1];
 
@@ -81,10 +45,19 @@ ALGEB matpoly_rt(MKernelVector kv, ALGEB *args){
     nmod_poly_mat_t A;
 
     get_nmod_poly_mat(A, modulus, kv, stringmat);
+
+    nmod_poly_t p;  
+
+    nmod_poly_init(p, modulus); // Inittialization probably not done by flint below ? 
+
+    nmod_poly_mat_det(p, A);
     
-    return nmod_poly_mat_to_algeb(kv,A);
+    return nmod_poly_to_algeb(kv,p);
 
 }
+
+
+
 
 #endif
 

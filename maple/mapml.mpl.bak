@@ -10,7 +10,6 @@ mapml:= module()
 	local pmlflintpath, mapmlpath, pmlflint_lib, mapml_lib, ff, 
 	      tottest, succeeded;
 
-	
 
 	# Local functions 
 	# ---------------
@@ -22,7 +21,7 @@ mapml:= module()
 	# High level submodule functions 
 	# ------------------------------
 
-	export pmCheck_Io, pmDeterminant, pmCheck_Determinant, Dev:
+	export pmCheckIo, pmDeterminant, pmCheckDeterminant, pmCheck, Dev:
 
 
 
@@ -106,7 +105,7 @@ mapml:= module()
 
 
 	# export
-	pmCheck_Determinant :=proc() local rr,A,val,q,n,d1,d2;
+	pmCheckDeterminant :=proc() local rr,A,val,q,n,d1,d2;
 
 		tottest:=0: succeeded:=0: # GV here or global ? 
 
@@ -120,12 +119,41 @@ mapml:= module()
 
 		d2:=Determinant(A) mod q;
 
-		val:= expand(d1-d1) mod q;
+		val:= expand(d1-d2) mod q;
+
+		if (val=0) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+		q:=2;
+		n:=20; 
+		
+		rr:=t->randpoly(x,degree=4) mod q:
+		A:=RandomMatrix(n,n,generator=rr);
+		
+		d1:=pmDeterminant(A,q);
+
+		d2:=Determinant(A) mod q;
+
+		val:= expand(d1-d2) mod q;
 
 		if (val=0) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
 
-        printf("%d tests passed, over %d",succeeded,tottest);
+		q:=179424673;
+		n:=6; 
+		
+		rr:=t->randpoly(x,degree=36) mod q:
+		A:=RandomMatrix(n,n,generator=rr);
+		
+		d1:=pmDeterminant(A,q);
+
+		d2:=Determinant(A) mod q;
+
+		val:= expand(d1-d2) mod q;
+
+		if (val=0) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+
+        printf("%d tests passed, over %d (determinant)\n",succeeded,tottest);
 
 		return(val);
 
@@ -141,7 +169,7 @@ mapml:= module()
 	end proc:
 
 	# export
-	pmCheck_Io :=proc() local rr,t,A,B,Z,val,q,m,n;
+	pmCheckIo :=proc() local rr,t,A,B,Z,val,q,m,n;
 
 		tottest:=0: succeeded:=0: # GV here or global ? 
 
@@ -181,12 +209,23 @@ mapml:= module()
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
 
-
-        printf("%d tests passed, over %d",succeeded,tottest);
+        printf("%d tests passed, over %d (round trip matrix)\n",succeeded,tottest);
 
 		return(val);
 
 	end proc: 
+
+
+	# Check all 
+	# ---------
+
+	pmCheck :=proc() 
+
+		pmCheckIo();
+		pmCheckDeterminant();
+
+	end proc:
+
 
 end module: 	
 

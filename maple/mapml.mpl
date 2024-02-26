@@ -38,14 +38,13 @@ mapml:= module()
 
 	ModuleLoad:= proc( )
         printf("Loading mapml\n");
-        pmCheck_Io();
     end proc:
 
     # Explicitly call ModuleLoad here so the type is registered when this
     # code is cut&pasted in.  ModuleLoad gets called when the module is
     # read from the repository, but the code used to define a module
     # (like the command below) is not called at library read time.
-    
+
     ModuleLoad();
 
     #ModuleUnload:= proc( )

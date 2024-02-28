@@ -21,7 +21,7 @@ mapml:= module()
 	# High level submodule functions 
 	# ------------------------------
 
-	export pmCheckIo, pmDeterminant, pmCheckDeterminant, pmCheck, Dev:
+	export pmCheckIo, pmDeterminant, pmCheckDeterminant, pmCheck, pmMBasis, Dev:
 
 
 
@@ -74,11 +74,13 @@ mapml:= module()
 
 	    description "YYY";
 
-		export matpoly_rt, pm_determinant;					
+		export matpoly_rt, pm_determinant, pm_mbasis;					
 
 		matpoly_rt := define_external("matpoly_rt",MAPLE, LIB = mapml_lib);
 
 		pm_determinant := define_external("pm_determinant",MAPLE, LIB = mapml_lib);
+
+		pm_mbasis := define_external("pm_mbasis",MAPLE, LIB = mapml_lib);
 
 	end module: 	
 
@@ -96,7 +98,16 @@ mapml:= module()
 
 	end proc: 
 
-		
+	
+	pmMBasis :=proc(A,q) local t,stringA; 
+
+		stringA:=map(t->convertpol(t,q),A);
+
+		return Dev:-pm_mbasis(stringA,q);
+
+	end proc: 
+
+
 
 	#  Test functions  
 	#  --------------

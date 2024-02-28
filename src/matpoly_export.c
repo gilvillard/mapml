@@ -38,15 +38,15 @@
 
 ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
 
-    ALGEB stringmat=args[1];
+   ALGEB stringmat=args[1];
 
-    mp_limb_t modulus = MapleToInteger64(kv,args[2]);
+   mp_limb_t modulus = MapleToInteger64(kv,args[2]);
 
-    nmod_poly_mat_t A;
+   nmod_poly_mat_t A;
 
-    get_nmod_poly_mat(A, modulus, kv, stringmat);
+   get_nmod_poly_mat(A, modulus, kv, stringmat);
 
-    nmod_poly_t p;  
+   nmod_poly_t p;  
 
     nmod_poly_init(p, modulus); // Inittialization probably not done by flint below ? 
 
@@ -54,8 +54,54 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
     
     return nmod_poly_to_algeb(kv,p);
 
-}
+ }
 
+
+/**********************************************************
+ * 
+ * modulo matrix polynomial mbasis  
+ * 
+ *  ALGEB args[1]: matrix polynomial string 
+ *        args[2]: modulus 
+ * 
+ ***********************************************************/
+
+
+// Row basis ? 
+
+ ALGEB pm_mbasis(MKernelVector kv, ALGEB *args){
+
+   ALGEB stringmat=args[1];
+
+   mp_limb_t modulus = MapleToInteger64(kv,args[2]);
+
+   nmod_poly_mat_t A;
+
+   get_nmod_poly_mat(A, modulus, kv, stringmat);
+
+   slong m = A ->r;
+
+   nmod_poly_mat_t M;
+
+   nmod_poly_mat_init(M, m, m, modulus); 
+
+   //slong res_shift[m];
+
+   slong shift[m];
+   for (ulong i = 0; i < m; i++) 
+      shift[i]=0;
+
+   ulong order;
+
+   order = 4; 
+
+   nmod_poly_mat_mbasis(M, shift, A, order);
+   //mbasis(M, res_shift, A, order, shift);
+
+
+   return nmod_poly_mat_to_algeb(kv,M);
+
+}
 
 
 

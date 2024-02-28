@@ -36,6 +36,7 @@
 
 ALGEB pm_determinant(MKernelVector kv, ALGEB *args);
 
+ALGEB pm_mbasis(MKernelVector kv, ALGEB *args);
 
 #endif
 

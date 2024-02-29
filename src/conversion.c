@@ -53,18 +53,29 @@ ALGEB nmod_poly_to_algeb(MKernelVector kv, const nmod_poly_t p){
 
 /**********************************************************
  * 
- * Converts an nmod_poly_mat to its maple equivalent 
+ * Converts an nmod_mat_poly to its maple equivalent 
  *   !! no modulus is transmitted
+ * 
+ * Todo: convert matrix coefficients directly ? 
+ *    not by global matrix conversion ? 
  * 
  ***********************************************************/
 
-ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A){
+ALGEB nmod_mat_poly_to_algeb(MKernelVector kv, const nmod_mat_poly_t Ain){
 
     ALGEB maple_A; 
 
-    slong m = A->r;
-    slong n = A->c;
+    slong m = Ain->r;
+    slong n = Ain->c;
 
+    nmod_poly_mat_t A;
+
+    // Initialization necessary? 
+    nmod_poly_mat_init(A, m, n , Ain->mod.n);
+
+    nmod_poly_mat_set_from_mat_poly(A,Ain);
+
+    //------------------------------
     RTableSettings setting;
     RTableGetDefaults(kv, &setting);
     setting.num_dimensions=2;
@@ -93,9 +104,59 @@ ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A){
             RTableAssign(kv, maple_A, index, tmp);
         }
 
-        return maple_A;
+    // Put this ?
+    nmod_poly_mat_clear(A);
 
-    }
+    return maple_A;
+
+}
+
+
+/**********************************************************
+ * 
+ * Converts an nmod_poly_mat to its maple equivalent 
+ *   !! no modulus is transmitted
+ * 
+ ***********************************************************/
+
+ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A){
+
+    ALGEB maple_A; 
+
+    slong m = A->r;
+    slong n = A->c;
+
+    RTableSettings setting;
+    RTableGetDefaults(kv, &setting);
+    setting.num_dimensions=2;
+    setting.subtype=RTABLE_MATRIX;
+
+    M_INT bounds[4];
+    bounds[0] = 1;
+    bounds[1] = m;
+    bounds[2] = 1;
+    bounds[3] = n;
+
+    maple_A = RTableCreate(kv,&setting,NULL,bounds);
+
+
+    M_INT index[2];
+    RTableData tmp;
+
+    for (slong i=1; i<m+1; i++)
+        for (slong j=1; j<n+1; j++){
+
+            index[0]=i;
+            index[1]=j;
+
+            tmp.dag =  nmod_poly_to_algeb(kv, nmod_poly_mat_entry(A,i-1,j-1));
+
+            RTableAssign(kv, maple_A, index, tmp);
+        }
+
+    return maple_A;
+
+}
 
 
 /**********************************************************
@@ -138,6 +199,60 @@ void get_nmod_poly(nmod_poly_t p, const mp_limb_t modulus, MKernelVector kv, ALG
 // }
 
 
+
+/**********************************************************
+ * 
+ * Converts a maple string matrix polynomial representation 
+ *  [i,j][deg+1  modulus coefficients]
+ *  to an nmod_poly_mat_t   
+ * 
+ *  ALGEB string_A: a matrix of strings
+ * 
+ ***********************************************************/
+
+
+void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A){
+
+
+    //ALGEB maple_A = args[1]; // Doesn't work with P in input? 
+
+    M_INT m,n;   // slong flint or M_INT ? 
+
+    m = RTableUpperBound(kv, string_A, 1);
+
+    n = RTableUpperBound(kv, string_A, 2);
+
+    nmod_poly_mat_t A;
+
+    nmod_poly_mat_init(A, m, n , modulus); // Initializes the polynomials 
+
+    M_INT index[2];
+
+    RTableData tmp;             
+
+    for (slong i=1; i<m+1; i++)
+        for (slong j=1; j<n+1; j++){
+
+            index[0]=i;
+            index[1]=j;
+            tmp = RTableSelect(kv,string_A,index);
+
+            // polynomials have been initialized 
+            nmod_poly_set_str(nmod_poly_mat_entry(A,i-1,j-1), MapleToString(kv,tmp.dag));
+
+        }
+
+    nmod_mat_poly_init(Aout, m, n, modulus);
+
+    slong len = nmod_poly_mat_max_length(A);
+
+    nmod_mat_poly_set_trunc_from_poly_mat(Aout,A,len);
+
+    nmod_poly_mat_clear(A);
+
+}
+
+
 /**********************************************************
  * 
  * Converts a maple string polynomial matrix representation 
@@ -149,7 +264,7 @@ void get_nmod_poly(nmod_poly_t p, const mp_limb_t modulus, MKernelVector kv, ALG
  ***********************************************************/
 
 
-void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A){
+    void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A){
 
 
     //ALGEB maple_A = args[1]; // Doesn't work with P in input? 
@@ -179,7 +294,7 @@ void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVect
         }
 
 
-}
+    }
 
 
 #endif

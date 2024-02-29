@@ -38,6 +38,18 @@ ALGEB nmod_poly_to_algeb(MKernelVector kv, const nmod_poly_t p);
 
 /**********************************************************
  * 
+ * Converts an nmod_mat_poly to its maple equivalent 
+ *   !! no modulus is transmitted
+ * 
+ * Todo: convert matrix coefficients directly ? 
+ *    not by global matrix conversion ? 
+ * 
+ ***********************************************************/
+
+ALGEB nmod_mat_poly_to_algeb(MKernelVector kv, const nmod_mat_poly_t Ain);
+
+/**********************************************************
+ * 
  * Converts an nmod_poly_mat to its maple equivalent 
  *   !! no modulus is transmitted
  * 
@@ -59,6 +71,18 @@ ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A);
 void get_nmod_poly(nmod_poly_t p, const mp_limb_t modulus, MKernelVector kv, ALGEB stringpol);
 
 
+/**********************************************************
+ * 
+ * Converts a maple string matrix polynomial representation 
+ *  [i,j][deg+1  modulus coefficients]
+ *  to an nmod_poly_mat_t   
+ * 
+ *  ALGEB string_A: a matrix of strings
+ * 
+ ***********************************************************/
+
+
+void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A);
 /**********************************************************
  * 
  * Converts a maple string polynomial matrix representation 

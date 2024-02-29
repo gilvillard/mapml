@@ -55,15 +55,14 @@ ALGEB polynomial_rt(MKernelVector kv, ALGEB *args){
 
 }
 
-
 /**********************************************************
  * 
- * maple polynomial round trip (for cheks) 
+ * maple matrix polynomial round trip (for cheks) 
  * 
- * Converts a maple string polynomial representation 
+ * Converts a maple string polynomial matrix representation 
  *  [deg+1  modulus coefficients]
- *  back to a maple polynomial   
- * 
+ *  back to a maple polynomial  matrix  
+ * Internal: mat_poly
  *  
  *  ALGEB args[1]: polynomial matrix of string 
  *        args[2]: modulus 
@@ -73,6 +72,38 @@ ALGEB polynomial_rt(MKernelVector kv, ALGEB *args){
 
 
 ALGEB matpoly_rt(MKernelVector kv, ALGEB *args){
+
+    ALGEB stringmat=args[1];
+
+    mp_limb_t modulus = MapleToInteger64(kv,args[2]);
+
+    nmod_mat_poly_t A;
+
+    get_nmod_mat_poly(A, modulus, kv, stringmat);
+    
+    return nmod_mat_poly_to_algeb(kv,A);
+
+}
+
+
+/**********************************************************
+ * 
+ * maple polynomial matrix round trip (for cheks) 
+ * 
+ * Converts a maple string polynomial matrix representation 
+ *  [deg+1  modulus coefficients]
+ *  back to a maple polynomial matrix 
+ * Internal: poly_mat
+ * 
+ *  
+ *  ALGEB args[1]: polynomial matrix of string 
+ *        args[2]: modulus 
+ * 
+ * 
+ ***********************************************************/
+
+
+ALGEB polymat_rt(MKernelVector kv, ALGEB *args){
 
     ALGEB stringmat=args[1];
 

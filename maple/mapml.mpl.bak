@@ -16,13 +16,12 @@ mapml:= module()
 
 	local convertpol; 
 
-	local matpoly_rt;
 
 	# High level submodule functions 
 	# ------------------------------
 
-	export pmCheckIo, pmDeterminant, pmCheckDeterminant, pmCheck, pmMBasis, Dev:
-
+	export pmPolyMatRT,pmMatPolyRT,pmCheckIo, pmDeterminant, pmCheckDeterminant, 
+	       pmCheck, pmMBasis, Dev:
 
 
 	option package, load=Init, unload=End: 
@@ -74,7 +73,9 @@ mapml:= module()
 
 	    description "YYY";
 
-		export matpoly_rt, pm_determinant, pm_mbasis;					
+		export polymat_rt, matpoly_rt, pm_determinant, pm_mbasis;					
+
+		polymat_rt := define_external("polymat_rt",MAPLE, LIB = mapml_lib);
 
 		matpoly_rt := define_external("matpoly_rt",MAPLE, LIB = mapml_lib);
 
@@ -170,14 +171,25 @@ mapml:= module()
 
 	end proc: 
 
-	# local
-	matpoly_rt:=proc(A,modulus) local stringA;
+	# export
 
-   		stringA:=map(t->convertpol(t,modulus),A);
+	pmMatPolyRT:=proc(A,modulus) local stringA;
+
+   	   stringA:=map(t->convertpol(t,modulus),A);
 
 	   return Dev:-matpoly_rt(stringA,modulus);
 
 	end proc:
+
+	pmPolyMatRT:=proc(A,modulus) local stringA;
+
+   		stringA:=map(t->convertpol(t,modulus),A);
+
+	   return Dev:-polymat_rt(stringA,modulus);
+
+	end proc:
+
+	
 
 	# export
 	pmCheckIo :=proc() local rr,t,A,B,Z,val,q,m,n;
@@ -189,7 +201,7 @@ mapml:= module()
 		Z:=Matrix(m,n,0);
 		rr:=t->randpoly(x,degree=2) mod q:
 		A:=RandomMatrix(m,n,generator=rr);
-		B:=matpoly_rt(A,q);
+		B:=pmPolyMatRT(A,q);
 
 		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
 
@@ -200,12 +212,71 @@ mapml:= module()
 		Z:=Matrix(m,n,0);
 		rr:=t->randpoly(x,degree=8) mod q:
 		A:=RandomMatrix(m,n,generator=rr);
-		B:=matpoly_rt(A,q);
+		B:=pmPolyMatRT(A,q);
 
 		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
 
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
+		q:=2;
+		m:=40; n:=44; 
+		Z:=Matrix(m,n,0);
+		rr:=t->randpoly(x,degree=1) mod q:
+		A:=RandomMatrix(m,n,generator=rr);
+		B:=pmPolyMatRT(A,q);
+
+		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+
+		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+		q:=179424673;
+		m:=20; n:=16; 
+		Z:=Matrix(m,n,0);
+		rr:=t->randpoly(x,degree=8) mod q:
+		A:=RandomMatrix(m,n,generator=rr);
+		B:=pmPolyMatRT(A,q);
+
+		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+
+		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+
+        printf("%d tests passed, over %d (round trip polynomial matrix)\n",succeeded,tottest);
+
+		tottest:=0: succeeded:=0: # GV here or global ? 
+
+		q:=11;
+		m:=2; n:=4; 
+		Z:=Matrix(m,n,0);
+		rr:=t->randpoly(x,degree=2) mod q:
+		A:=RandomMatrix(m,n,generator=rr);
+		B:=pmMatPolyRT(A,q);
+
+		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+
+		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+		q:=2;
+		m:=40; n:=44; 
+		Z:=Matrix(m,n,0);
+		rr:=t->randpoly(x,degree=8) mod q:
+		A:=RandomMatrix(m,n,generator=rr);
+		B:=pmMatPolyRT(A,q);
+
+		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+
+		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+		q:=2;
+		m:=40; n:=44; 
+		Z:=Matrix(m,n,0);
+		rr:=t->randpoly(x,degree=1) mod q:
+		A:=RandomMatrix(m,n,generator=rr);
+		B:=pmMatPolyRT(A,q);
+
+		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+
+		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
 
 		q:=179424673;
@@ -213,14 +284,14 @@ mapml:= module()
 		Z:=Matrix(m,n,0);
 		rr:=t->randpoly(x,degree=8) mod q:
 		A:=RandomMatrix(m,n,generator=rr);
-		B:=matpoly_rt(A,q);
+		B:=pmMatPolyRT(A,q);
 
 		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
 
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
 
-        printf("%d tests passed, over %d (round trip matrix)\n",succeeded,tottest);
+        printf("%d tests passed, over %d (round trip matrix polynomial)\n",succeeded,tottest);
 
 		return(val);
 

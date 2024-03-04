@@ -75,7 +75,7 @@ mapml:= module()
 
 		export polymat_rt, matpoly_rt, pm_determinant, pm_mbasis;					
 
-		polymat_rt := define_external("polymat_rt",MAPLE, LIB = mapml_lib);
+		polymat_rt := define_external("polymat_rt2",MAPLE, LIB = mapml_lib);
 
 		matpoly_rt := define_external("matpoly_rt",MAPLE, LIB = mapml_lib);
 
@@ -167,25 +167,25 @@ mapml:= module()
 
         printf("%d tests passed, over %d (determinant)\n",succeeded,tottest);
 
-		return(val);
+		return(val):
 
 	end proc: 
 
 	# export
 
-	pmMatPolyRT:=proc(A,modulus) local stringA;
+	pmMatPolyRT:=proc(A,modulus) local stringA,t;
 
    	   stringA:=map(t->convertpol(t,modulus),A);
 
-	   return Dev:-matpoly_rt(stringA,modulus);
+	   return(map(t->FromCoefficientList(t, x), Dev:-matpoly_rt(stringA,modulus))): 
 
 	end proc:
 
 	pmPolyMatRT:=proc(A,modulus) local stringA;
 
-   		stringA:=map(t->convertpol(t,modulus),A);
+   		stringA:=map(t->CoefficientVector(t,x),A);;
 
-	   return Dev:-polymat_rt(stringA,modulus);
+		return(map(t->FromCoefficientList(t, x), Dev:-polymat_rt(stringA,modulus))): 
 
 	end proc:
 

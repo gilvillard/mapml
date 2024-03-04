@@ -36,6 +36,34 @@
 
 ALGEB nmod_poly_to_algeb(MKernelVector kv, const nmod_poly_t p){
 
+    slong d = nmod_poly_degree(p);
+
+    ALGEB listcoeff;
+
+    listcoeff= MapleListAlloc(kv,d+1);
+
+    double t = 0.0;
+    clock_t tt;
+
+    tt = clock();
+
+    for (slong i = 1; i <= d+1; i++) 
+        MapleListAssign(kv,listcoeff,i, ToMapleInteger(kv,nmod_poly_get_coeff_ui(p, i-1)));
+
+    //t = (double)(clock()-tt) / CLOCKS_PER_SEC;
+    //MapleALGEB_Printf(kv, " Time list  %f ms\n", ToMapleFloat(kv,t*1000));
+
+
+    //ALGEB f;
+    //f = EvalMapleStatement(kv,"proc(l) local i, p; p:=0; for  i from 1 to nops(l)  do  p:=p+ l[i]*x^(i-1); end do; return p; end proc;");
+
+    //return EvalMapleProc(kv, f, 1, listcoeff);
+    return listcoeff;
+}
+
+
+ALGEB old_nmod_poly_to_algeb(MKernelVector kv, const nmod_poly_t p){
+
     ALGEB maple_p; 
 
     slong d = nmod_poly_degree(p);
@@ -126,6 +154,12 @@ ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A){
     slong m = A->r;
     slong n = A->c;
 
+
+    double t = 0.0;
+    clock_t tt;
+
+    tt = clock();
+
     RTableSettings setting;
     RTableGetDefaults(kv, &setting);
     setting.num_dimensions=2;
@@ -140,11 +174,21 @@ ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A){
     maple_A = RTableCreate(kv,&setting,NULL,bounds);
 
 
+    t = (double)(clock()-tt) / CLOCKS_PER_SEC;
+    MapleALGEB_Printf(kv, " Time create %f ms\n", ToMapleFloat(kv,t*1000));
+
+    
+
     M_INT index[2];
     RTableData tmp;
 
+tt = clock();
+
     for (slong i=1; i<m+1; i++)
         for (slong j=1; j<n+1; j++){
+
+
+    
 
             index[0]=i;
             index[1]=j;
@@ -152,11 +196,20 @@ ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A){
             tmp.dag =  nmod_poly_to_algeb(kv, nmod_poly_mat_entry(A,i-1,j-1));
 
             RTableAssign(kv, maple_A, index, tmp);
+
+    
         }
 
-        return maple_A;
+    
+    t = (double)(clock()-tt) / CLOCKS_PER_SEC;
+    MapleALGEB_Printf(kv, " Time convert %f ms\n", ToMapleFloat(kv,t*1000));
+
+
+
+    return maple_A;
 
 }
+
 
 
 /**********************************************************
@@ -312,13 +365,16 @@ void get_nmod_poly_mat2(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVec
 
     M_INT index[2];
 
-    RTableData tmp;             
+    M_INT lindex[1];
+
+    RTableData tmp,tc;             
 
     double t = 0.0;
     clock_t tt;
 
     tt = clock();
 
+    slong d;  // slong or M_INT ?
 
     for (slong i=1; i<m+1; i++)
         for (slong j=1; j<n+1; j++){
@@ -328,14 +384,30 @@ void get_nmod_poly_mat2(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVec
             tmp = RTableSelect(kv,string_A,index);
 
             // polynomials have been initialized 
-            nmod_poly_set_str(nmod_poly_mat_entry(A,i-1,j-1), MapleToString(kv,tmp.dag));
+            //nmod_poly_set_str(nmod_poly_mat_entry(A,i-1,j-1), MapleToString(kv,tmp.dag));
+
+            //-------------
+            
+            
+
+            d = RTableUpperBound(kv, tmp.dag,1); 
+
+            for (slong k=1; k<d+1; k++) {
+
+                lindex[0]=k;
+                tc = RTableSelect(kv,tmp.dag,lindex);
+                nmod_poly_set_coeff_ui(nmod_poly_mat_entry(A,i-1,j-1),k-1,MapleToInteger64(kv,tc.dag));
+
+            }
+
+            //------------
 
         }
 
 
     t += (double)(clock()-tt) / CLOCKS_PER_SEC;
 
-    MapleALGEB_Printf(kv, " Time %f ms", ToMapleFloat(kv,t*1000));
+    MapleALGEB_Printf(kv, " Time get %f ms\n", ToMapleFloat(kv,t*1000));
 
 
 }

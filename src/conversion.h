@@ -96,6 +96,7 @@ void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelV
 
 void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A); 
 
+void get_nmod_poly_mat2(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A); 
 
 #endif
 

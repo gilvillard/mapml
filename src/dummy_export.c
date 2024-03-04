@@ -117,6 +117,22 @@ ALGEB polymat_rt(MKernelVector kv, ALGEB *args){
 
 }
 
+ALGEB polymat_rt2(MKernelVector kv, ALGEB *args){
+
+    ALGEB stringmat=args[1];
+
+    mp_limb_t modulus = MapleToInteger64(kv,args[2]);
+
+    nmod_poly_mat_t A;
+
+    get_nmod_poly_mat2(A, modulus, kv, stringmat);
+    
+    return nmod_poly_mat_to_algeb(kv,A);
+
+}
+
+
+
 #endif
 
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

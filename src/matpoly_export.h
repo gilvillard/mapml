@@ -28,15 +28,36 @@
  * 
  * modulo matrix polynomial determinant  
  * 
- *  ALGEB args[1]: matrix polynomial string 
+ *  ALGEB args[1]: matrix polynomial, vector entries 
  *        args[2]: modulus 
+ * 
+ * Returns the determinant as a list of coefficients 
  * 
  ***********************************************************/
 
 
 ALGEB pm_determinant(MKernelVector kv, ALGEB *args);
 
-ALGEB pm_mbasis(MKernelVector kv, ALGEB *args);
+
+/**********************************************************
+ * 
+ * modulo matrix polynomial mbasis  
+ * 
+ *  ALGEB args[1]: matrix polynomial, vector entries 
+ *        args[2]: modulus 
+ * 
+ *  Returns a polynomial matrix, list entries 
+ * 
+ *  Calls pml poly_mat i.e. matrix of polynomials 
+ *     for divide and conquer w.r.t the order 
+ * 
+ * 
+ ***********************************************************/
+
+
+// Row basis, how to specify ? 
+
+ALGEB pm_matrix_mbasis(MKernelVector kv, ALGEB *args);
 
 #endif
 

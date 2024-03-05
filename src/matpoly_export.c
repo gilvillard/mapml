@@ -30,8 +30,10 @@
  * 
  * modulo matrix polynomial determinant  
  * 
- *  ALGEB args[1]: matrix polynomial string 
+ *  ALGEB args[1]: matrix polynomial, vector entries 
  *        args[2]: modulus 
+ * 
+ * Returns the determinant as a list of coefficients 
  * 
  ***********************************************************/
 
@@ -61,19 +63,27 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
  * 
  * modulo matrix polynomial mbasis  
  * 
- *  ALGEB args[1]: matrix polynomial string 
- *        args[2]: modulus 
+ *  ALGEB args[1]: shift
+ *        args[2]: matrix polynomial, vector entries 
+ *        args[3]: order
+ *        args[4]: modulus 
+ * 
+ *  Returns a polynomial matrix, list entries 
+ * 
+ *  Calls pml poly_mat i.e. matrix of polynomials 
+ *     for divide and conquer w.r.t the order 
+ * 
  * 
  ***********************************************************/
 
 
-// Row basis ? 
+// Row basis, how to specify ? 
 
- ALGEB pm_mbasis(MKernelVector kv, ALGEB *args){
+ ALGEB pm_matrix_mbasis(MKernelVector kv, ALGEB *args){
 
-   ALGEB stringmat=args[1];
+   ALGEB stringmat=args[2];
 
-   mp_limb_t modulus = MapleToInteger64(kv,args[2]);
+   mp_limb_t modulus = MapleToInteger64(kv,args[4]);
 
    nmod_poly_mat_t A;
 
@@ -87,21 +97,37 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
 
    //slong res_shift[m];
 
+   ALGEB maple_shift = args[1];
+
    slong shift[m];
    for (ulong i = 0; i < m; i++) 
-      shift[i]=0;
+      shift[i]=MapleToInteger64(kv,MapleListSelect(kv,maple_shift,i+1));
 
-   ulong order;
-
-   order = 4; 
+   ulong order = MapleToInteger64(kv,args[3]);
 
    nmod_poly_mat_mbasis(M, shift, A, order);
    //mbasis(M, res_shift, A, order, shift);
 
-
    return nmod_poly_mat_to_algeb(kv,M);
 
 }
+
+
+//ALGEB coeffs = args[1]; // Work with coeffs in input? 
+
+//     M_INT l = MapleToInteger64(kv,args[2]);
+
+//     MapleALGEB_Printf(kv, " Length %a", ToMapleInteger(kv,l));
+
+//     for (M_INT i=0; i<l; i++) {
+
+//         nmod_poly_set_coeff_ui(p, ), 
+//            MapleToInteger64(kv,MapleListSelect(kv,coeffs,2*i+2)));
+
+
+
+
+
 
 
 

@@ -115,6 +115,7 @@ ALGEB nmod_mat_poly_to_algeb(MKernelVector kv, const nmod_mat_poly_t Ain){
             index[1]=j;
 
             tmp.dag =  nmod_poly_to_algeb(kv, nmod_poly_mat_entry(A,i-1,j-1));
+            //tmp.dag =  ToMapleString(kv,nmod_poly_get_str_pretty(nmod_poly_mat_entry(A,i-1,j-1),"x"));
 
             RTableAssign(kv, maple_A, index, tmp);
         }
@@ -142,8 +143,8 @@ ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A){
     slong n = A->c;
 
 
-    //double t = 0.0;
-    //clock_t tt;
+    // double t = 0.0;
+    // clock_t tt;
 
     //tt = clock();
 
@@ -179,13 +180,14 @@ ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A){
             index[1]=j;
 
             tmp.dag =  nmod_poly_to_algeb(kv, nmod_poly_mat_entry(A,i-1,j-1));
+            //tmp.dag =  ToMapleString(kv,nmod_poly_get_str_pretty(nmod_poly_mat_entry(A,i-1,j-1),"x"));
 
             RTableAssign(kv, maple_A, index, tmp);
         }
 
     
-    //t = (double)(clock()-tt) / CLOCKS_PER_SEC;
-    //MapleALGEB_Printf(kv, " Time convert %f ms\n", ToMapleFloat(kv,t*1000));
+    // t = (double)(clock()-tt) / CLOCKS_PER_SEC;
+    // MapleALGEB_Printf(kv, " Time to alg %f ms\n", ToMapleFloat(kv,t*1000));
 
     return maple_A;
 
@@ -339,15 +341,15 @@ void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVect
 
     RTableData tmp,tc;             
 
-    //double t = 0.0;
-    //clock_t tt;
+    // double t = 0.0;
+    // clock_t tt;
 
-    //tt = clock();
+    // tt = clock();
 
     slong d;  // Vector dimensions i.e. vector degrees // slong or M_INT ?
 
 
-    // Loop on teh entries of the matrix 
+    // Loop on the entries of the matrix 
     for (slong i=1; i<m+1; i++)
         for (slong j=1; j<n+1; j++){
 
@@ -368,8 +370,8 @@ void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVect
         }
 
 
-    //t += (double)(clock()-tt) / CLOCKS_PER_SEC;
-    //MapleALGEB_Printf(kv, " Time get %f ms\n", ToMapleFloat(kv,t*1000));
+    // t = (double)(clock()-tt) / CLOCKS_PER_SEC;
+    // MapleALGEB_Printf(kv, " Time in get %f ms\n", ToMapleFloat(kv,t*1000));
 }
 
 // void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A){

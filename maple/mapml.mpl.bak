@@ -179,6 +179,8 @@ mapml:= module()
 
 	   return(map(t->FromCoefficientList(t, x), Dev:-matpoly_rt(vect_A,modulus))): 
 
+	   #return(map(t->op(sscanf(t, "%a")), Dev:-polymat_rt(vect_A,modulus))):
+
 	end proc:
 
 	pmPolyMatRT:=proc(A,modulus) local vect_A;
@@ -186,6 +188,8 @@ mapml:= module()
    		vect_A:=map(t->CoefficientVector(t,x),A);
 
 		return(map(t->FromCoefficientList(t, x), Dev:-polymat_rt(vect_A,modulus))): 
+
+		#return(map(t->op(sscanf(t, "%a")), Dev:-polymat_rt(vect_A,modulus))): 
 
 	end proc:
 

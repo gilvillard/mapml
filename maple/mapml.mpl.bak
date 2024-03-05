@@ -75,7 +75,7 @@ mapml:= module()
 
 		export polymat_rt, matpoly_rt, pm_determinant, pm_mbasis;					
 
-		polymat_rt := define_external("polymat_rt2",MAPLE, LIB = mapml_lib);
+		polymat_rt := define_external("polymat_rt",MAPLE, LIB = mapml_lib);
 
 		matpoly_rt := define_external("matpoly_rt",MAPLE, LIB = mapml_lib);
 
@@ -91,11 +91,11 @@ mapml:= module()
 	#  Definition of the high level submodule 
 	#  --------------------------------------
 
-	pmDeterminant :=proc(A,q) local t,stringA; 
+	pmDeterminant :=proc(A,q) local t, vect_A; 
 
-		stringA:=map(t->convertpol(t,q),A);
+		vect_A:=map(t->CoefficientVector(t,x),A);
 
-		return Dev:-pm_determinant(stringA,q);
+		return FromCoefficientList(Dev:-pm_determinant(vect_A,q),x);
 
 	end proc: 
 
@@ -136,7 +136,7 @@ mapml:= module()
 		if (val=0) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
 		q:=2;
-		n:=20; 
+		n:=30; 
 		
 		rr:=t->randpoly(x,degree=4) mod q:
 		A:=RandomMatrix(n,n,generator=rr);
@@ -165,7 +165,7 @@ mapml:= module()
 		if (val=0) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
 
-        printf("%d tests passed, over %d (determinant)\n",succeeded,tottest);
+        printf("%d successful tests, out of %d (determinant)\n",succeeded,tottest);
 
 		return(val):
 
@@ -173,19 +173,19 @@ mapml:= module()
 
 	# export
 
-	pmMatPolyRT:=proc(A,modulus) local stringA,t;
+	pmMatPolyRT:=proc(A,modulus) local vect_A,t;
 
-   	   stringA:=map(t->convertpol(t,modulus),A);
+   	   vect_A:=map(t->CoefficientVector(t,x),A);
 
-	   return(map(t->FromCoefficientList(t, x), Dev:-matpoly_rt(stringA,modulus))): 
+	   return(map(t->FromCoefficientList(t, x), Dev:-matpoly_rt(vect_A,modulus))): 
 
 	end proc:
 
-	pmPolyMatRT:=proc(A,modulus) local stringA;
+	pmPolyMatRT:=proc(A,modulus) local vect_A;
 
-   		stringA:=map(t->CoefficientVector(t,x),A);;
+   		vect_A:=map(t->CoefficientVector(t,x),A);
 
-		return(map(t->FromCoefficientList(t, x), Dev:-polymat_rt(stringA,modulus))): 
+		return(map(t->FromCoefficientList(t, x), Dev:-polymat_rt(vect_A,modulus))): 
 
 	end proc:
 
@@ -240,8 +240,8 @@ mapml:= module()
 
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
+		printf("%d successful tests, out of %d (round trip polynomial matrix)\n",succeeded,tottest);
 
-        printf("%d tests passed, over %d (round trip polynomial matrix)\n",succeeded,tottest);
 
 		tottest:=0: succeeded:=0: # GV here or global ? 
 
@@ -290,8 +290,7 @@ mapml:= module()
 
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
-
-        printf("%d tests passed, over %d (round trip matrix polynomial)\n",succeeded,tottest);
+		printf("%d successful tests, out of %d (round trip matrix polynomial)\n",succeeded,tottest);
 
 		return(val);
 

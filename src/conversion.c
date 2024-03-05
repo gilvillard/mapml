@@ -26,10 +26,8 @@
 
 /**********************************************************
  * 
- * Converts an nmod_poly_t to its maple equivalent 
+ * Converts an nmod_poly_t to a maple list of coefficients 
  *   !! no modulus is transmitted
- * 
- * Todo: use a list instead, cf linbox  lb-maple.C. lbConvertPolynomial
  * 
  *********************************************************/
 
@@ -42,50 +40,39 @@ ALGEB nmod_poly_to_algeb(MKernelVector kv, const nmod_poly_t p){
 
     listcoeff= MapleListAlloc(kv,d+1);
 
-    double t = 0.0;
-    clock_t tt;
-
-    tt = clock();
-
     for (slong i = 1; i <= d+1; i++) 
         MapleListAssign(kv,listcoeff,i, ToMapleInteger(kv,nmod_poly_get_coeff_ui(p, i-1)));
 
-    //t = (double)(clock()-tt) / CLOCKS_PER_SEC;
-    //MapleALGEB_Printf(kv, " Time list  %f ms\n", ToMapleFloat(kv,t*1000));
-
-
-    //ALGEB f;
-    //f = EvalMapleStatement(kv,"proc(l) local i, p; p:=0; for  i from 1 to nops(l)  do  p:=p+ l[i]*x^(i-1); end do; return p; end proc;");
-
-    //return EvalMapleProc(kv, f, 1, listcoeff);
     return listcoeff;
 }
 
 
-ALGEB old_nmod_poly_to_algeb(MKernelVector kv, const nmod_poly_t p){
+// ALGEB old_nmod_poly_to_algeb(MKernelVector kv, const nmod_poly_t p){
 
-    ALGEB maple_p; 
+//     ALGEB maple_p; 
 
-    slong d = nmod_poly_degree(p);
+//     slong d = nmod_poly_degree(p);
 
-    maple_p = ToMapleInteger(kv,nmod_poly_get_coeff_ui(p, 0));
+//     maple_p = ToMapleInteger(kv,nmod_poly_get_coeff_ui(p, 0));
 
-    ALGEB f = EvalMapleStatement(kv,"proc(pol,c,d) return (pol +c*x^d); end proc;");
+//     ALGEB f = EvalMapleStatement(kv,"proc(pol,c,d) return (pol +c*x^d); end proc;");
 
-    for (slong i = 1; i <= d; i++) 
-        maple_p = EvalMapleProc(kv, f, 3, maple_p, ToMapleInteger(kv,nmod_poly_get_coeff_ui(p, i)),ToMapleInteger(kv,i));
+//     for (slong i = 1; i <= d; i++) 
+//         maple_p = EvalMapleProc(kv, f, 3, maple_p, ToMapleInteger(kv,nmod_poly_get_coeff_ui(p, i)),ToMapleInteger(kv,i));
 
-    return maple_p;   
-}
+//     return maple_p;   
+// }
 
 
 /**********************************************************
  * 
- * Converts an nmod_mat_poly to its maple equivalent 
+ * Converts an nmod_mat_poly to a maple matrix of lists  
  *   !! no modulus is transmitted
  * 
- * Todo: convert matrix coefficients directly ? 
+ * Todo: convert matrix coefficients directly, 
  *    not by global matrix conversion ? 
+ * 
+ * For the moment: simply goes via a poly_mat 
  * 
  ***********************************************************/
 
@@ -133,16 +120,16 @@ ALGEB nmod_mat_poly_to_algeb(MKernelVector kv, const nmod_mat_poly_t Ain){
         }
 
     // Put this ?
-        nmod_poly_mat_clear(A);
+    nmod_poly_mat_clear(A);
 
-        return maple_A;
+    return maple_A;
 
 }
 
 
 /**********************************************************
  * 
- * Converts an nmod_poly_mat to its maple equivalent 
+ * Converts an nmod_poly_mat to a mapel matrix of lists  
  *   !! no modulus is transmitted
  * 
  ***********************************************************/
@@ -155,10 +142,10 @@ ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A){
     slong n = A->c;
 
 
-    double t = 0.0;
-    clock_t tt;
+    //double t = 0.0;
+    //clock_t tt;
 
-    tt = clock();
+    //tt = clock();
 
     RTableSettings setting;
     RTableGetDefaults(kv, &setting);
@@ -174,21 +161,19 @@ ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A){
     maple_A = RTableCreate(kv,&setting,NULL,bounds);
 
 
-    t = (double)(clock()-tt) / CLOCKS_PER_SEC;
-    MapleALGEB_Printf(kv, " Time create %f ms\n", ToMapleFloat(kv,t*1000));
+    //t = (double)(clock()-tt) / CLOCKS_PER_SEC;
+    //MapleALGEB_Printf(kv, " Time create %f ms\n", ToMapleFloat(kv,t*1000));
 
     
 
     M_INT index[2];
     RTableData tmp;
 
-tt = clock();
+    //tt = clock();
 
     for (slong i=1; i<m+1; i++)
         for (slong j=1; j<n+1; j++){
 
-
-    
 
             index[0]=i;
             index[1]=j;
@@ -196,15 +181,11 @@ tt = clock();
             tmp.dag =  nmod_poly_to_algeb(kv, nmod_poly_mat_entry(A,i-1,j-1));
 
             RTableAssign(kv, maple_A, index, tmp);
-
-    
         }
 
     
-    t = (double)(clock()-tt) / CLOCKS_PER_SEC;
-    MapleALGEB_Printf(kv, " Time convert %f ms\n", ToMapleFloat(kv,t*1000));
-
-
+    //t = (double)(clock()-tt) / CLOCKS_PER_SEC;
+    //MapleALGEB_Printf(kv, " Time convert %f ms\n", ToMapleFloat(kv,t*1000));
 
     return maple_A;
 
@@ -220,15 +201,17 @@ tt = clock();
  * 
  *  ALGEB stringpol: a string
  * 
+ *  Initialization included
+ * 
  ***********************************************************/
 
-void get_nmod_poly(nmod_poly_t p, const mp_limb_t modulus, MKernelVector kv, ALGEB stringpol){ 
+// void get_nmod_poly(nmod_poly_t p, const mp_limb_t modulus, MKernelVector kv, ALGEB stringpol){ 
 
-    nmod_poly_init(p, modulus);
+//     nmod_poly_init(p, modulus);
 
-    nmod_poly_set_str(p, MapleToString(kv,stringpol));
+//     nmod_poly_set_str(p, MapleToString(kv,stringpol));
 
-}
+// }
 
 
 // MapleToInteger64 vs slong and ulong 
@@ -253,143 +236,126 @@ void get_nmod_poly(nmod_poly_t p, const mp_limb_t modulus, MKernelVector kv, ALG
 
 
 
-/**********************************************************
+/************************************************************
  * 
- * Converts a maple string matrix polynomial representation 
- *  [i,j][deg+1  modulus coefficients]
- *  to an nmod_poly_mat_t   
+ * Converts a maple matrix of coefficient vectors  
+ *  to an nmod_mat_poly_t   
  * 
- *  ALGEB string_A: a matrix of strings
+ *  ALGEB vect_A: a maple matrix of vectors
  * 
- ***********************************************************/
+ *  Initialization included
+ * 
+ *************************************************************/
 
 
-void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A){
+void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect_A){
 
 
     //ALGEB maple_A = args[1]; // Doesn't work with P in input? 
 
     M_INT m,n;   // slong flint or M_INT ? 
 
-    m = RTableUpperBound(kv, string_A, 1);
+    m = RTableUpperBound(kv, vect_A, 1);
 
-    n = RTableUpperBound(kv, string_A, 2);
+    n = RTableUpperBound(kv, vect_A, 2);
 
     nmod_poly_mat_t A;
 
     nmod_poly_mat_init(A, m, n , modulus); // Initializes the polynomials 
 
-    M_INT index[2];
 
-    RTableData tmp;             
+    M_INT index[2];  // The matrix 
 
-    for (slong i=1; i<m+1; i++)
-        for (slong j=1; j<n+1; j++){
-
-            index[0]=i;
-            index[1]=j;
-            tmp = RTableSelect(kv,string_A,index);
-
-            // polynomials have been initialized 
-            nmod_poly_set_str(nmod_poly_mat_entry(A,i-1,j-1), MapleToString(kv,tmp.dag));
-
-        }
-
-        nmod_mat_poly_init(Aout, m, n, modulus);
-
-        slong len = nmod_poly_mat_max_length(A);
-
-        nmod_mat_poly_set_trunc_from_poly_mat(Aout,A,len);
-
-        nmod_poly_mat_clear(A);
-
-}
-
-
-/**********************************************************
- * 
- * Converts a maple string polynomial matrix representation 
- *  [i,j][deg+1  modulus coefficients]
- *  to an nmod_poly_mat_t   
- * 
- *  ALGEB string_A: a matrix of strings
- * 
- ***********************************************************/
-
-
-void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A){
-
-
-    //ALGEB maple_A = args[1]; // Doesn't work with P in input? 
-
-    M_INT m,n;   // slong flint or M_INT ? 
-
-    m = RTableUpperBound(kv, string_A, 1);
-
-    n = RTableUpperBound(kv, string_A, 2);
-
-    nmod_poly_mat_init(A, m, n , modulus); // Initializes the polynomials 
-
-    M_INT index[2];
-
-    RTableData tmp;             
-
-    for (slong i=1; i<m+1; i++)
-        for (slong j=1; j<n+1; j++){
-
-            index[0]=i;
-            index[1]=j;
-            tmp = RTableSelect(kv,string_A,index);
-
-            // polynomials have been initialized 
-            nmod_poly_set_str(nmod_poly_mat_entry(A,i-1,j-1), MapleToString(kv,tmp.dag));
-
-        }
-
-
-}
-
-
-void get_nmod_poly_mat2(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A){
-
-
-    //ALGEB maple_A = args[1]; // Doesn't work with P in input? 
-
-    M_INT m,n;   // slong flint or M_INT ? 
-
-    m = RTableUpperBound(kv, string_A, 1);
-
-    n = RTableUpperBound(kv, string_A, 2);
-
-    nmod_poly_mat_init(A, m, n , modulus); // Initializes the polynomials 
-
-    M_INT index[2];
-
-    M_INT lindex[1];
+    M_INT lindex[1];  // The coefficient vectors 
 
     RTableData tmp,tc;             
 
-    double t = 0.0;
-    clock_t tt;
+    //double t = 0.0;
+    //clock_t tt;
 
-    tt = clock();
+    //tt = clock();
 
-    slong d;  // slong or M_INT ?
+    slong d;  // Vector dimensions i.e. vector degrees // slong or M_INT ?
 
+
+    // Loop on the entries of the matrix 
     for (slong i=1; i<m+1; i++)
         for (slong j=1; j<n+1; j++){
 
             index[0]=i;
             index[1]=j;
-            tmp = RTableSelect(kv,string_A,index);
+            tmp = RTableSelect(kv,vect_A,index);
 
-            // polynomials have been initialized 
-            //nmod_poly_set_str(nmod_poly_mat_entry(A,i-1,j-1), MapleToString(kv,tmp.dag));
+            // Loop on the coefficients of each entry 
+            d = RTableUpperBound(kv, tmp.dag,1); 
 
-            //-------------
-            
-            
+            for (slong k=1; k<d+1; k++) {
 
+                lindex[0]=k;
+                tc = RTableSelect(kv,tmp.dag,lindex);
+                nmod_poly_set_coeff_ui(nmod_poly_mat_entry(A,i-1,j-1),k-1,MapleToInteger64(kv,tc.dag));
+
+        }
+    }
+
+    nmod_mat_poly_init(Aout, m, n, modulus);
+
+    slong len = nmod_poly_mat_max_length(A);
+
+    nmod_mat_poly_set_trunc_from_poly_mat(Aout,A,len);
+
+    nmod_poly_mat_clear(A);
+
+}
+
+
+/************************************************************
+ * 
+ * Converts a maple matrix of coefficient vectors  
+ *  to an nmod_poly_mat_t   
+ * 
+ *  ALGEB vect_A: a maple matrix of vectors
+ * 
+ *  Initialization included
+ * 
+ *************************************************************/
+
+void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect_A){
+
+
+    //ALGEB maple_A = args[1]; // Doesn't work with P in input? 
+
+    M_INT m,n;   // slong flint or M_INT ? 
+
+    m = RTableUpperBound(kv, vect_A, 1);
+
+    n = RTableUpperBound(kv, vect_A, 2);
+
+    nmod_poly_mat_init(A, m, n , modulus); // Initializes the polynomials 
+
+    M_INT index[2];  // The matrix 
+
+    M_INT lindex[1];  // The coefficient vectors 
+
+    RTableData tmp,tc;             
+
+    //double t = 0.0;
+    //clock_t tt;
+
+    //tt = clock();
+
+    slong d;  // Vector dimensions i.e. vector degrees // slong or M_INT ?
+
+
+    // Loop on teh entries of the matrix 
+    for (slong i=1; i<m+1; i++)
+        for (slong j=1; j<n+1; j++){
+
+            index[0]=i;
+            index[1]=j;
+            tmp = RTableSelect(kv,vect_A,index);
+
+            // Loop on the coefficients of each entry 
             d = RTableUpperBound(kv, tmp.dag,1); 
 
             for (slong k=1; k<d+1; k++) {
@@ -399,18 +365,42 @@ void get_nmod_poly_mat2(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVec
                 nmod_poly_set_coeff_ui(nmod_poly_mat_entry(A,i-1,j-1),k-1,MapleToInteger64(kv,tc.dag));
 
             }
-
-            //------------
-
         }
 
 
-    t += (double)(clock()-tt) / CLOCKS_PER_SEC;
-
-    MapleALGEB_Printf(kv, " Time get %f ms\n", ToMapleFloat(kv,t*1000));
-
-
+    //t += (double)(clock()-tt) / CLOCKS_PER_SEC;
+    //MapleALGEB_Printf(kv, " Time get %f ms\n", ToMapleFloat(kv,t*1000));
 }
+
+// void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A){
+
+
+//     //ALGEB maple_A = args[1]; // Doesn't work with P in input? 
+
+//     M_INT m,n;   // slong flint or M_INT ? 
+
+//     m = RTableUpperBound(kv, string_A, 1);
+
+//     n = RTableUpperBound(kv, string_A, 2);
+
+//     nmod_poly_mat_init(A, m, n , modulus); // Initializes the polynomials 
+
+//     M_INT index[2];
+
+//     RTableData tmp;             
+
+//     for (slong i=1; i<m+1; i++)
+//         for (slong j=1; j<n+1; j++){
+
+//             index[0]=i;
+//             index[1]=j;
+//             tmp = RTableSelect(kv,string_A,index);
+
+//             // polynomials have been initialized 
+//             nmod_poly_set_str(nmod_poly_mat_entry(A,i-1,j-1), MapleToString(kv,tmp.dag));
+
+//         }
+// }
 
 
 #endif

@@ -40,31 +40,31 @@
  ***********************************************************/
 
 
-ALGEB polynomial_rt(MKernelVector kv, ALGEB *args){
+// ALGEB polynomial_rt(MKernelVector kv, ALGEB *args){
 
-    ALGEB stringpol=args[1];
+//     ALGEB stringpol=args[1];
 
-    mp_limb_t modulus = MapleToInteger64(kv,args[2]);
+//     mp_limb_t modulus = MapleToInteger64(kv,args[2]);
 
-    nmod_poly_t p;  
-    // The polynomial is initialized by nmod_poly_to_algeb
+//     nmod_poly_t p;  
+//     // The polynomial is initialized by nmod_poly_to_algeb
 
-    get_nmod_poly(p, modulus, kv, stringpol);
+//     get_nmod_poly(p, modulus, kv, stringpol);
     
-    return nmod_poly_to_algeb(kv,p);
+//     return nmod_poly_to_algeb(kv,p);
 
-}
+// }
 
 /**********************************************************
  * 
- * maple matrix polynomial round trip (for cheks) 
+ * Maple matrix polynomial round trip (for cheks) 
  * 
- * Converts a maple string polynomial matrix representation 
- *  [deg+1  modulus coefficients]
- *  back to a maple polynomial  matrix  
+ * Converts a maple vector polynomial matrix 
+ *   to a maple list polynomial matrix 
+ *
  * Internal: mat_poly
  *  
- *  ALGEB args[1]: polynomial matrix of string 
+ *  ALGEB args[1]: polynomial matrix: matrix of vectors 
  *        args[2]: modulus 
  * 
  * 
@@ -73,13 +73,13 @@ ALGEB polynomial_rt(MKernelVector kv, ALGEB *args){
 
 ALGEB matpoly_rt(MKernelVector kv, ALGEB *args){
 
-    ALGEB stringmat=args[1];
+    ALGEB vect_mat=args[1];
 
     mp_limb_t modulus = MapleToInteger64(kv,args[2]);
 
     nmod_mat_poly_t A;
 
-    get_nmod_mat_poly(A, modulus, kv, stringmat);
+    get_nmod_mat_poly(A, modulus, kv, vect_mat);
     
     return nmod_mat_poly_to_algeb(kv,A);
 
@@ -88,50 +88,32 @@ ALGEB matpoly_rt(MKernelVector kv, ALGEB *args){
 
 /**********************************************************
  * 
- * maple polynomial matrix round trip (for cheks) 
+ * Maple matrix polynomial round trip (for cheks) 
  * 
- * Converts a maple string polynomial matrix representation 
- *  [deg+1  modulus coefficients]
- *  back to a maple polynomial matrix 
+ * Converts a maple vector polynomial matrix 
+ *   to a maple list polynomial matrix 
+ *
  * Internal: poly_mat
- * 
  *  
- *  ALGEB args[1]: polynomial matrix of string 
+ *  ALGEB args[1]: polynomial matrix: matrix of vectors 
  *        args[2]: modulus 
  * 
  * 
  ***********************************************************/
 
-
 ALGEB polymat_rt(MKernelVector kv, ALGEB *args){
 
-    ALGEB stringmat=args[1];
+    ALGEB vect_mat=args[1];
 
     mp_limb_t modulus = MapleToInteger64(kv,args[2]);
 
     nmod_poly_mat_t A;
 
-    get_nmod_poly_mat(A, modulus, kv, stringmat);
+    get_nmod_poly_mat(A, modulus, kv, vect_mat);
     
     return nmod_poly_mat_to_algeb(kv,A);
 
 }
-
-ALGEB polymat_rt2(MKernelVector kv, ALGEB *args){
-
-    ALGEB stringmat=args[1];
-
-    mp_limb_t modulus = MapleToInteger64(kv,args[2]);
-
-    nmod_poly_mat_t A;
-
-    get_nmod_poly_mat2(A, modulus, kv, stringmat);
-    
-    return nmod_poly_mat_to_algeb(kv,A);
-
-}
-
-
 
 #endif
 

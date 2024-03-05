@@ -23,39 +23,42 @@
 #include "mapml.h"
 
 
+
 /**********************************************************
  * 
- * Converts an nmod_poly_t to its maple equivalent 
+ * Converts an nmod_poly_t to a maple list of coefficients 
  *   !! no modulus is transmitted
- * 
- * Todo: use a list instead, cf linbox  lb-maple.C. lbConvertPolynomial
  * 
  *********************************************************/
 
 
-ALGEB nmod_poly_to_algeb(MKernelVector kv, const nmod_poly_t p);
+ALGEB nmod_poly_to_algeb(MKernelVector kv, const nmod_poly_t p); 
 
 
 /**********************************************************
  * 
- * Converts an nmod_mat_poly to its maple equivalent 
+ * Converts an nmod_mat_poly to a maple matrix of lists  
  *   !! no modulus is transmitted
  * 
- * Todo: convert matrix coefficients directly ? 
+ * Todo: convert matrix coefficients directly, 
  *    not by global matrix conversion ? 
+ * 
+ * For the moment: simply goes via a poly_mat 
  * 
  ***********************************************************/
 
 ALGEB nmod_mat_poly_to_algeb(MKernelVector kv, const nmod_mat_poly_t Ain);
 
+
 /**********************************************************
  * 
- * Converts an nmod_poly_mat to its maple equivalent 
+ * Converts an nmod_poly_mat to a maple matrix of lists  
  *   !! no modulus is transmitted
  * 
  ***********************************************************/
 
 ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A);
+
 
 
 /**********************************************************
@@ -65,38 +68,43 @@ ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A);
  *  to an nmod_poly_t t  
  * 
  *  ALGEB stringpol: a string
+ *  
+ *  Initialization included
  * 
  ***********************************************************/
 
-void get_nmod_poly(nmod_poly_t p, const mp_limb_t modulus, MKernelVector kv, ALGEB stringpol);
+//void get_nmod_poly(nmod_poly_t p, const mp_limb_t modulus, MKernelVector kv, ALGEB stringpol);
 
 
-/**********************************************************
+/************************************************************
  * 
- * Converts a maple string matrix polynomial representation 
- *  [i,j][deg+1  modulus coefficients]
+ * Converts a maple matrix of coefficient vectors  
+ *  to an nmod_mat_poly_t   
+ * 
+ *  ALGEB vect_A: a maple matrix of vectors
+ *  
+ *  Initialization included
+ * 
+ *************************************************************/
+
+
+void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect_A);
+
+
+/************************************************************
+ * 
+ * Converts a maple matrix of coefficient vectors  
  *  to an nmod_poly_mat_t   
  * 
- *  ALGEB string_A: a matrix of strings
+ *  ALGEB vect_A: a maple matrix of vectors
+ *  
+ *  Initialization included
  * 
- ***********************************************************/
+ *************************************************************/
+
+void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect_A);
 
 
-void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A);
-/**********************************************************
- * 
- * Converts a maple string polynomial matrix representation 
- *  [i,j][deg+1  modulus coefficients]
- *  to an nmod_poly_mat_t   
- * 
- *  ALGEB string_A: a matrix of strings
- * 
- ***********************************************************/
-
-
-void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A); 
-
-void get_nmod_poly_mat2(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A); 
 
 #endif
 

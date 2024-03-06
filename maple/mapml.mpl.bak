@@ -100,7 +100,7 @@ mapml:= module()
 	end proc: 
 
 	
-	pmMatMBasis :=proc(shift, A, order, q) local t,vect_A; 
+	pmMatMBasis :=proc(shift, A, order, x, q) local t,vect_A; 
 
 		vect_A:=map(t->CoefficientVector(t,x),A);
 

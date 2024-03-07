@@ -31,6 +31,7 @@ mapml:= module()
 
 	mapmlpath := "path2";
 
+	# How does maple find the other libraries? 
 	pmlflint_lib := cat(pmlflintpath,"/libpmlflint.dylib");
         mapml_lib := cat(mapmlpath,"/lib/libmapml.dylib");
 
@@ -100,11 +101,13 @@ mapml:= module()
 	end proc: 
 
 	
-	pmMatMBasis :=proc(shift, A, order, x, q) local t,vect_A; 
+	pmMatMBasis :=proc(shift, A, order, x, q) local t,vect_A,res; 
 
 		vect_A:=map(t->CoefficientVector(t,x),A);
 
-		return(map(t->FromCoefficientList(t, x), Dev:-pm_matrix_mbasis(shift, vect_A, order, q))): 
+		res:=Dev:-pm_matrix_mbasis(shift, vect_A, order, q);
+
+		res := map(t->FromCoefficientList(t, x), res[1]),res[2]: 
 
 	end proc: 
 

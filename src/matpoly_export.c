@@ -68,10 +68,10 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
  *        args[3]: order
  *        args[4]: modulus 
  * 
- *  Returns a polynomial matrix, list entries 
- * 
- *  Calls pml poly_mat i.e. matrix of polynomials 
- *     for divide and conquer w.r.t the order 
+ *  Returns M,dct 
+ *    M: a polynomial matrix, list entries 
+ *    dct: the out defects  
+ *     !!! Be careful with the sign either defect or shifts 
  * 
  * 
  ***********************************************************/
@@ -108,7 +108,20 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
    nmod_poly_mat_mbasis(M, shift, A, order);
    //mbasis(M, res_shift, A, order, shift);
 
-   return nmod_poly_mat_to_algeb(kv,M);
+
+   ALGEB outdct;
+
+   outdct= MapleListAlloc(kv,m);
+
+   for (slong i = 1; i <= m; i++) 
+        MapleListAssign(kv,outdct,i, ToMapleInteger(kv,shift[i-1]));
+
+    
+   ALGEB res= MapleListAlloc(kv,2);
+   MapleListAssign(kv,res,1,nmod_poly_mat_to_algeb(kv,M));
+   MapleListAssign(kv,res,2,outdct);
+
+   return res;
 
 }
 

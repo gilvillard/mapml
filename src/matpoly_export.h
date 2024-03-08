@@ -41,15 +41,34 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args);
 
 /**********************************************************
  * 
+ * modulo matrix polynomial !!!!!!!!!!! DIFFBASIS TODO 
+ * 
+ *  TODO 
+ * 
+ ***********************************************************/
+
+
+// Row basis, how to specify ? 
+
+ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args);
+
+
+
+/**********************************************************
+ * 
  * modulo matrix polynomial mbasis  
  * 
- *  ALGEB args[1]: matrix polynomial, vector entries 
- *        args[2]: modulus 
+ *  ALGEB args[1]: shift
+ *        args[2]: matrix polynomial, vector entries 
+ *        args[3]: order
+ *        args[4]: modulus 
  * 
- *  Returns a polynomial matrix, list entries 
+ *  Returns M,dct 
+ *    M: a polynomial matrix, list entries 
+ *    dct: the out defects  
  * 
- *  Calls pml poly_mat i.e. matrix of polynomials 
- *     for divide and conquer w.r.t the order 
+ *     !!! Be careful with the sign either 
+ *         defect (e.g. in gfun) or shifts = -dct in pml
  * 
  * 
  ***********************************************************/
@@ -58,6 +77,33 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args);
 // Row basis, how to specify ? 
 
 ALGEB pm_matrix_mbasis(MKernelVector kv, ALGEB *args);
+
+
+
+/**********************************************************
+ * 
+ * modulo matrix polynomial pmbasis  
+ * 
+ *  ALGEB args[1]: shift
+ *        args[2]: matrix polynomial, vector entries 
+ *        args[3]: order
+ *        args[4]: modulus 
+ * 
+ *  Returns M,dct 
+ *    M: a polynomial matrix, list entries 
+ *    dct: the out defects  
+ * 
+ *     !!! Be careful with the sign either 
+ *         defect (e.g. in gfun) or shifts = -dct in pml
+ * 
+ * 
+ ***********************************************************/
+
+
+// Row basis, how to specify ? 
+
+ALGEB pm_matrix_pmbasis(MKernelVector kv, ALGEB *args);
+
 
 #endif
 

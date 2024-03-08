@@ -30,30 +30,29 @@
  * 
  * maple polynomial round trip (for cheks) 
  * 
- * Converts a maple string polynomial representation 
- *  [deg+1  modulus coefficients]
- *  back to a maple polynomial   
- * 
+ * * Converts a maple vector 
+ *   to a maple list polynomial
+ *
  *  ALGEB args[1]: polynomial string 
  *        args[2]: modulus 
  * 
  ***********************************************************/
 
 
-// ALGEB polynomial_rt(MKernelVector kv, ALGEB *args){
+ALGEB polynomial_rt(MKernelVector kv, ALGEB *args){
 
-//     ALGEB stringpol=args[1];
+    ALGEB vect=args[1];
 
-//     mp_limb_t modulus = MapleToInteger64(kv,args[2]);
+    mp_limb_t modulus = MapleToInteger64(kv,args[2]);
 
-//     nmod_poly_t p;  
-//     // The polynomial is initialized by nmod_poly_to_algeb
+    nmod_poly_t p;  
+    // The polynomial is initialized by teh call below
 
-//     get_nmod_poly(p, modulus, kv, stringpol);
+    get_nmod_poly(p, modulus, kv, vect);
     
-//     return nmod_poly_to_algeb(kv,p);
+    return nmod_poly_to_algeb(kv,p);
 
-// }
+}
 
 /**********************************************************
  * 

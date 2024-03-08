@@ -60,20 +60,19 @@ ALGEB nmod_mat_poly_to_algeb(MKernelVector kv, const nmod_mat_poly_t Ain);
 ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A);
 
 
-
-/**********************************************************
+/************************************************************
  * 
- * Converts a maple string polynomial representation 
- *  [deg+1  modulus coefficients]
- *  to an nmod_poly_t t  
+ * Converts a maple coefficient vector 
+ *  to an nmod_poly_t   
  * 
- *  ALGEB stringpol: a string
- *  
+ *  ALGEB vect_A: a maple vector
+ * 
  *  Initialization included
  * 
- ***********************************************************/
+ *************************************************************/
 
-//void get_nmod_poly(nmod_poly_t p, const mp_limb_t modulus, MKernelVector kv, ALGEB stringpol);
+
+void get_nmod_poly(nmod_poly_t p,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect);
 
 
 /************************************************************

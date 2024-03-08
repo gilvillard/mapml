@@ -20,8 +20,8 @@ mapml:= module()
 	# High level submodule functions 
 	# ------------------------------
 
-	export pmPolyMatRT,pmMatPolyRT,pmCheckIo, pmDeterminant, pmCheckDeterminant, 
-	       pmCheck, pmMatMBasis, Dev:
+	export pmPolyRT,pmPolyMatRT,pmMatPolyRT,pmCheckIo, pmDeterminant, pmCheckDeterminant, 
+	       pmCheck, pmDiffMBasis, pmMatMBasis, pmMatPMBasis, Dev:
 
 
 	option package, load=Init, unload=End: 
@@ -74,7 +74,9 @@ mapml:= module()
 
 	    description "YYY";
 
-		export polymat_rt, matpoly_rt, pm_determinant, pm_matrix_mbasis;					
+		export polynomial_rt,polymat_rt, matpoly_rt, pm_determinant, pm_diff_mbasis, pm_matrix_mbasis, pm_matrix_pmbasis;					
+
+		polynomial_rt := define_external("polynomial_rt",MAPLE, LIB = mapml_lib);
 
 		polymat_rt := define_external("polymat_rt",MAPLE, LIB = mapml_lib);
 
@@ -82,7 +84,11 @@ mapml:= module()
 
 		pm_determinant := define_external("pm_determinant",MAPLE, LIB = mapml_lib);
 
+		pm_diff_mbasis := define_external("pm_diff_mbasis",MAPLE, LIB = mapml_lib);
+
 		pm_matrix_mbasis := define_external("pm_matrix_mbasis",MAPLE, LIB = mapml_lib);
+
+		pm_matrix_pmbasis := define_external("pm_matrix_pmbasis",MAPLE, LIB = mapml_lib);
 
 	end module: 	
 
@@ -101,16 +107,91 @@ mapml:= module()
 	end proc: 
 
 	
-	pmMatMBasis :=proc(shift, A, order, x, q) local t,vect_A,res; 
+	pmDiffMBasis :=proc(shift, A, order, x, q) local t,vect_A,res,tt,i,M,dct; 
+	
+		## !!!! Extraire un vecteur de la matrix 1 x n reçue 
+		## !!!!!!!!!
+
+		tt:=time();
 
 		vect_A:=map(t->CoefficientVector(t,x),A);
 
-		res:=Dev:-pm_matrix_mbasis(shift, vect_A, order, q);
+		tt:=time()-tt;
 
-		res := map(t->FromCoefficientList(t, x), res[1]),res[2]: 
+		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %f ms",1000*tt));
+
+		res:=Dev:-pm_diff_mbasis(shift, vect_A, order, q);
+
+		tt:=time();
+
+		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %a",res[2]));
+
+		member(min(op(res[2])),res[2],'i');
+		res[1]:=res[1][i,1..-1];
+
+		res := map(t->FromCoefficientList(t, x), res[1]),res[2][i]: 
+
+		tt:=time()-tt;
+
+		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %f ms",1000*tt));
+
+		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %a",res[2]));
+
+		return(res):
 
 	end proc: 
 
+
+	pmMatMBasis :=proc(shift, A, order, x, q) local t,vect_A,res,tt; 
+	
+		
+		tt:=time();
+
+		vect_A:=map(t->CoefficientVector(t,x),A);
+
+		tt:=time()-tt;
+
+		userinfo(1,'gfun',sprintf("+++++ mbasis 1: %f ms",1000*tt));
+
+		res:=Dev:-pm_matrix_mbasis(shift, vect_A, order, q);
+
+		tt:=time();
+
+		res := map(t->FromCoefficientList(t, x), res[1]),res[2]: 
+
+		tt:=time()-tt;
+
+		userinfo(1,'gfun',sprintf("+++++ mbasis 2: %f ms",1000*tt));
+
+		return(res):
+
+	end proc: 
+
+
+	pmMatPMBasis :=proc(shift, A, order, x, q) local t,vect_A,res,tt; 
+	
+		
+		tt:=time();
+
+		vect_A:=map(t->CoefficientVector(t,x),A);
+
+		tt:=time()-tt;
+
+		userinfo(1,'gfun',sprintf("+++++ pmbasis 1: %f ms",1000*tt));
+
+		res:=Dev:-pm_matrix_pmbasis(shift, vect_A, order, q);
+
+		tt:=time();
+
+		res := map(t->FromCoefficientList(t, x), res[1]),res[2]: 
+
+		tt:=time()-tt;
+
+		userinfo(1,'gfun',sprintf("+++++ pmbasis 2: %f ms",1000*tt));
+
+		return(res):
+
+	end proc: 
 
 
 	#  Test functions  
@@ -176,6 +257,15 @@ mapml:= module()
 
 	# export
 
+
+	pmPolyRT:=proc(p,modulus) local vect;
+
+   	   vect:=CoefficientVector(p,x);
+
+	   return(FromCoefficientList(Dev:-polynomial_rt(vect,modulus),x)): 
+
+	end proc:
+
 	pmMatPolyRT:=proc(A,modulus) local vect_A,t;
 
    	   vect_A:=map(t->CoefficientVector(t,x),A);
@@ -199,7 +289,37 @@ mapml:= module()
 	
 
 	# export
-	pmCheckIo :=proc() local rr,t,A,B,Z,val,q,m,n;
+	pmCheckIo :=proc() local rr,t,A,B,Z,val,q,m,n,p,pp;
+
+		tottest:=0: succeeded:=0: # GV here or global ? 
+
+		q:=11;
+		m:=80;
+		p:=randpoly(x,degree=m) mod q:
+		pp:=pmPolyRT(p,q);
+		val:=expand(p-pp) mod q; 
+
+		if (val=0) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+		q:=2;
+		m:=800;
+		p:=randpoly(x,degree=m,sparse) mod q:
+		pp:=pmPolyRT(p,q);
+		val:=expand(p-pp) mod q; 
+
+		if (val=0) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+
+		q:=7;
+		m:=12000;
+		p:=randpoly(x,degree=m,sparse) mod q:
+		pp:=pmPolyRT(p,q);
+		val:=expand(p-pp) mod q; 
+
+		if (val=0) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
+
+
+		printf("%d successful tests, out of %d (round trip polynomial)\n",succeeded,tottest);
 
 		tottest:=0: succeeded:=0: # GV here or global ? 
 

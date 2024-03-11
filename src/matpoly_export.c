@@ -81,6 +81,8 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
 
 // Row basis, how to specify ? 
 
+ // Rajouter la dimension en paramètre 
+
  ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
 
 
@@ -98,6 +100,19 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
 
    slong m = A ->r;
 
+   // Recevoir le polynôme à la place de A 
+   // Remplir V avec les dérivées 
+
+   // generate a vector of derivatives from teh polynomial 
+
+   nmod_poly_mat_t Vdiff;
+
+   nmod_poly_mat_init(Vdiff, m, 1, modulus); // No use of vectors 
+
+   
+
+
+   // Resulting basis  
    nmod_poly_mat_t M;
 
    nmod_poly_mat_init(M, m, m, modulus); 

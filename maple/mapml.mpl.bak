@@ -106,9 +106,13 @@ mapml:= module()
 
 	end proc: 
 
-	
+
+	## !!! Rajouter la dimension 
+
 	pmDiffMBasis :=proc(shift, A, order, x, q) local t,vect_A,res,tt,i,M,dct; 
 	
+		## Recevoir un polynôme directement 
+
 		## !!!! Extraire un vecteur de la matrix 1 x n reçue 
 		## !!!!!!!!!
 

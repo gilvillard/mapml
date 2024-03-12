@@ -107,37 +107,37 @@ mapml:= module()
 	end proc: 
 
 
-	## !!! Rajouter la dimension 
 
-	pmDiffMBasis :=proc(shift, A, order, x, q) local t,vect_A,res,tt,i,M,dct; 
-	
-		## Recevoir un polynôme directement 
+	pmDiffMBasis :=proc(shift, p, order, x, q,method) local t, vect_p,res,tt,i,M,dct; 
+
 
 		## !!!! Extraire un vecteur de la matrix 1 x n reçue 
 		## !!!!!!!!!
 
 		tt:=time();
 
-		vect_A:=map(t->CoefficientVector(t,x),A);
+		vect_p:=CoefficientVector(p,x);
 
 		tt:=time()-tt;
 
-		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %f ms",1000*tt));
+		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %f s",tt));
 
-		res:=Dev:-pm_diff_mbasis(shift, vect_A, order, q);
+		res:=Dev:-pm_diff_mbasis(shift, vect_p, order, q,method);
 
-		tt:=time();
+		
 
 		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %a",res[2]));
 
 		member(min(op(res[2])),res[2],'i');
 		res[1]:=res[1][i,1..-1];
 
+		tt:=time();
+
 		res := map(t->FromCoefficientList(t, x), res[1]),res[2][i]: 
 
 		tt:=time()-tt;
 
-		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %f ms",1000*tt));
+		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %f s",tt));
 
 		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %a",res[2]));
 

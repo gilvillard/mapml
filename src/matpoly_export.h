@@ -39,19 +39,28 @@
 ALGEB pm_determinant(MKernelVector kv, ALGEB *args);
 
 
-/**********************************************************
+
+/*******************************************************************
  * 
- * modulo matrix polynomial !!!!!!!!!!! DIFFBASIS TODO 
+ * Approximant row basis for a vector (m x 1 matrix) of derivatives 
  * 
- *  TODO 
+ *  ALGEB args[1]: shift
+ *        args[2]: polynomial (vector of coefficients)  
+ *        args[3]: order of approximation 
+ *        args[4]: modulus 
+ *        args[5]: method, "MBasis" or "PMBasis" 
  * 
- ***********************************************************/
+ *  Returns ALGEB  res:=[M,dct] 
+ *    M: a polynomial matrix, list entries, m x m 
+ *    dct: list of out defects  
+ * 
+ *  Eventually, be careful with the sign between either 
+ *      the defect (e.g. in gfun) or shifts = -dct in pml
+ * 
+ *******************************************************************/
 
 
-// Row basis, how to specify ? 
-
- ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args);
-
+ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args);
 
 
 /**********************************************************

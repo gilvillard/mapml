@@ -20,7 +20,7 @@
 #ifndef MAPML_MATPOLY_EXPORT_C
 #define MAPML_MATPOLY_EXPORT_C
 
-
+#include <string.h>
 #include "mapml.h"
 #include "conversion.h"
 
@@ -40,15 +40,15 @@
 
 ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
 
-   ALGEB stringmat=args[1];
+    ALGEB vectmat=args[1];
 
-   mp_limb_t modulus = MapleToInteger64(kv,args[2]);
+    mp_limb_t modulus = MapleToInteger64(kv,args[2]);
 
-   nmod_poly_mat_t A;
+    nmod_poly_mat_t A;
 
-   get_nmod_poly_mat(A, modulus, kv, stringmat);
+    get_nmod_poly_mat(A, modulus, kv, vectmat);
 
-   nmod_poly_t p;  
+    nmod_poly_t p;  
 
     nmod_poly_init(p, modulus); // Inittialization probably not done by flint below ? 
 
@@ -56,96 +56,93 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
     
     return nmod_poly_to_algeb(kv,p);
 
- }
+}
 
 
-/**********************************************************
+/*******************************************************************
  * 
- * modulo matrix polynomial !!!!!!!!!!! DIFFBASIS TODO 
+ * Approximant row basis for a vector (m x 1 matrix) of derivatives 
  * 
  *  ALGEB args[1]: shift
- *        args[2]: matrix polynomial, vector entries 
- *        args[3]: order
+ *        args[2]: polynomial (vector of coefficients)  
+ *        args[3]: order of approximation 
  *        args[4]: modulus 
+ *        args[5]: method, "MBasis" or "PMBasis" 
  * 
- *  Returns M,dct 
- *    M: a polynomial matrix, list entries 
- *    dct: the out defects  
+ *  Returns ALGEB  res:=[M,dct] 
+ *    M: a polynomial matrix, list entries, m x m 
+ *    dct: list of out defects  
  * 
- *     !!! Be careful with the sign either 
- *         defect (e.g. in gfun) or shifts = -dct in pml
+ *  Eventually, be careful with the sign between either 
+ *      the defect (e.g. in gfun) or shifts = -dct in pml
  * 
- * 
- ***********************************************************/
+ *******************************************************************/
 
 
-// Row basis, how to specify ? 
-
- // Rajouter la dimension en paramètre 
-
- ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
+ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
 
 
-   double t = 0.0;
-   clock_t tt;
-  
+    double t = 0.0;
+    clock_t tt;
 
-   ALGEB stringmat=args[2];
+    mp_limb_t modulus = MapleToInteger64(kv,args[4]);
 
-   mp_limb_t modulus = MapleToInteger64(kv,args[4]);
+    nmod_poly_t p;    // The polynomial that will be differentiated 
+    nmod_poly_init(p,modulus);
+    get_nmod_poly(p, modulus, kv, args[2]);
 
-   nmod_poly_mat_t A;
 
-   get_nmod_poly_mat(A, modulus, kv, stringmat);
+    //The dimension is deduced from the size of the shift 
+    M_INT m = MapleNumArgs(kv,args[1]);
 
-   slong m = A ->r;
 
-   // Recevoir le polynôme à la place de A 
-   // Remplir V avec les dérivées 
+    // the vector of derivatives 
+    nmod_poly_mat_t Vdiff;
+    nmod_poly_mat_init(Vdiff, m, 1, modulus);  // No use of vectors for the moment, matrices 
 
-   // generate a vector of derivatives from teh polynomial 
+    nmod_poly_set(nmod_poly_mat_entry(Vdiff,0,0),p);
 
-   nmod_poly_mat_t Vdiff;
+    for (ulong i = 1; i < m; i++)
+     nmod_poly_derivative(nmod_poly_mat_entry(Vdiff,i,0),nmod_poly_mat_entry(Vdiff,i-1,0));
 
-   nmod_poly_mat_init(Vdiff, m, 1, modulus); // No use of vectors 
 
+    // Resulting basis  
+    nmod_poly_mat_t M;
+    nmod_poly_mat_init(M, m, m, modulus); 
+
+    ALGEB maple_shift = args[1];
+    slong shift[m];
+    for (ulong i = 0; i < m; i++) 
+        shift[i]=MapleToInteger64(kv,MapleListSelect(kv,maple_shift,i+1));
+
+    ulong order = MapleToInteger64(kv,args[3]);
+
+
+    // appromimant computation using PML 
+
+    tt = clock();
+
+
+    if (strcmp(MapleToString(kv,args[5]),"MBasis") ==0) 
+        nmod_poly_mat_mbasis(M, shift, Vdiff, order); 
+    else 
+        nmod_poly_mat_pmbasis(M, shift, Vdiff, order); 
    
 
-
-   // Resulting basis  
-   nmod_poly_mat_t M;
-
-   nmod_poly_mat_init(M, m, m, modulus); 
-
-   //slong res_shift[m];
-
-   ALGEB maple_shift = args[1];
-
-   slong shift[m];
-   for (ulong i = 0; i < m; i++) 
-      shift[i]=MapleToInteger64(kv,MapleListSelect(kv,maple_shift,i+1));
-
-   ulong order = MapleToInteger64(kv,args[3]);
-
-
-   tt = clock();
-
-   nmod_poly_mat_mbasis(M, shift, A, order);
-   //mbasis(M, res_shift, A, order, shift);
-
    t = (double)(clock()-tt) / CLOCKS_PER_SEC;
-   MapleALGEB_Printf(kv, " ++++  Time mbasis %f ms\n", ToMapleFloat(kv,t*1000));
 
 
+   MapleALGEB_Printf(kv, MapleToString(kv,args[5]));
+   MapleALGEB_Printf(kv, " ++++  Time diffbasis %f ms\n", ToMapleFloat(kv,t*1000));
+
+
+   // Construction of the result [M, dct]
    ALGEB outdct;
 
    outdct= MapleListAlloc(kv,m);
 
    for (slong i = 1; i <= m; i++) 
         MapleListAssign(kv,outdct,i, ToMapleInteger(kv,shift[i-1]));
-
-
-   // Matrice 1 x n et pas un vecteur pour la conversion  
     
    ALGEB res= MapleListAlloc(kv,2);
    MapleListAssign(kv,res,1,nmod_poly_mat_to_algeb(kv,M));
@@ -154,8 +151,6 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
    return res;
 
 }
-
-
 
 
 /**********************************************************
@@ -187,13 +182,13 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
    clock_t tt;
   
 
-   ALGEB stringmat=args[2];
+   ALGEB vectmat=args[2];
 
    mp_limb_t modulus = MapleToInteger64(kv,args[4]);
 
    nmod_poly_mat_t A;
 
-   get_nmod_poly_mat(A, modulus, kv, stringmat);
+   get_nmod_poly_mat(A, modulus, kv, vectmat);
 
    slong m = A ->r;
 
@@ -267,13 +262,13 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
    clock_t tt;
   
 
-   ALGEB stringmat=args[2];
+   ALGEB vectmat=args[2];
 
    mp_limb_t modulus = MapleToInteger64(kv,args[4]);
 
    nmod_poly_mat_t A;
 
-   get_nmod_poly_mat(A, modulus, kv, stringmat);
+   get_nmod_poly_mat(A, modulus, kv, vectmat);
 
    slong m = A ->r;
 
@@ -327,12 +322,6 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
 
 //         nmod_poly_set_coeff_ui(p, ), 
 //            MapleToInteger64(kv,MapleListSelect(kv,coeffs,2*i+2)));
-
-
-
-
-
-
 
 
 #endif

@@ -120,13 +120,13 @@ mapml:= module()
 
 		tt:=time()-tt;
 
-		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %f s",tt));
+		#userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %f s",tt));
 
 		res:=Dev:-pm_diff_mbasis(shift, vect_p, order, q,method);
 
 		
 
-		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %a",res[2]));
+		#userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %a",res[2]));
 
 		member(min(op(res[2])),res[2],'i');
 		res[1]:=res[1][i,1..-1];
@@ -137,9 +137,9 @@ mapml:= module()
 
 		tt:=time()-tt;
 
-		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %f s",tt));
+		#userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %f s",tt));
 
-		userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %a",res[2]));
+		#userinfo(1,'gfun',sprintf("+++++ diffbasis 2: %a",res[2]));
 
 		return(res):
 

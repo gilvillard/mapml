@@ -82,8 +82,8 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
 ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
 
 
-    double t = 0.0;
-    clock_t tt;
+    //double t = 0.0;
+    //clock_t tt;
 
     mp_limb_t modulus = MapleToInteger64(kv,args[4]);
 
@@ -120,7 +120,7 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
 
     // appromimant computation using PML 
 
-    tt = clock();
+    //tt = clock();
 
 
     if (strcmp(MapleToString(kv,args[5]),"MBasis") ==0) 
@@ -129,11 +129,11 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
         nmod_poly_mat_pmbasis(M, shift, Vdiff, order); 
    
 
-   t = (double)(clock()-tt) / CLOCKS_PER_SEC;
+   //t = (double)(clock()-tt) / CLOCKS_PER_SEC;
 
 
-   MapleALGEB_Printf(kv, MapleToString(kv,args[5]));
-   MapleALGEB_Printf(kv, " ++++  Time diffbasis %f ms\n", ToMapleFloat(kv,t*1000));
+   //MapleALGEB_Printf(kv, MapleToString(kv,args[5]));
+   //MapleALGEB_Printf(kv, " ++++  Time diffbasis %f ms\n", ToMapleFloat(kv,t*1000));
 
 
    // Construction of the result [M, dct]

@@ -21,7 +21,7 @@ mapml:= module()
 	# ------------------------------
 
 	export pmPolyRT,pmPolyMatRT,pmMatPolyRT,pmCheckIo, pmDeterminant, pmCheckDeterminant, 
-	       pmCheck, pmDiffMBasis, pmMatMBasis, pmMatPMBasis, Dev:
+	       pmCheck, pmDiffMBasis, pmMatMBasis, pmMatPMBasis, Dev, coeffs:
 
 
 	option package, load=Init, unload=End: 
@@ -93,7 +93,7 @@ mapml:= module()
 	end module: 	
 
 
-
+	coeffs := define_external("coeffs",MAPLE, LIB = mapml_lib);
 
 	#  Definition of the high level submodule 
 	#  --------------------------------------

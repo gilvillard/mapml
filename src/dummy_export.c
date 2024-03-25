@@ -46,7 +46,7 @@ ALGEB polynomial_rt(MKernelVector kv, ALGEB *args){
     mp_limb_t modulus = MapleToInteger64(kv,args[2]);
 
     nmod_poly_t p;  
-    // The polynomial is initialized by teh call below
+    // The polynomial is initialized by the call below
 
     get_nmod_poly(p, modulus, kv, vect);
     

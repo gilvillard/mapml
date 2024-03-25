@@ -231,6 +231,9 @@ void get_nmod_poly(nmod_poly_t p,   const mp_limb_t modulus, MKernelVector kv, A
     }
 }
 
+
+
+
 /**********************************************************
  * 
  * Converts a maple string polynomial representation 
@@ -440,6 +443,69 @@ void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelV
 
 //         }
 // }
+
+
+/************************************************************
+ * 
+ * TODO 
+ * 
+ *  from a list of strings 
+ * 
+ *************************************************************/
+
+
+void get_fmpq_poly(fmpq_poly_t p, MKernelVector kv, ALGEB mappol){
+
+
+    fmpq_poly_init(p); 
+
+    fmpq_t q;
+    fmpq_init(q);
+
+    M_INT d;   // The degree   // slong flint or M_INT ? 
+
+    d = RTableUpperBound(kv, mappol, 1) -1;
+
+    //fmpq_poly_fit_length(p,d+1);
+
+    M_INT index[1];  
+
+    RTableData tmp;
+
+    // Loop on the entries of the vector  
+    for (slong i=1; i<=d+1; i++) {
+
+        index[0]=i;
+    
+        tmp = RTableSelect(kv,mappol,index);
+
+        fmpq_set_str(q, MapleToString(kv,tmp.dag), 10);
+
+
+        //++++++++++++
+        MapleALGEB_Printf(kv, " \n");
+        MapleALGEB_Printf(kv, " \n");
+        MapleALGEB_Printf(kv, MapleToString(kv,tmp.dag));
+
+
+        MapleALGEB_Printf(kv, " \n");
+        
+        char *str;
+        str=fmpq_get_str(str, 10, q);
+        
+
+        //+++++++++++++++++++++
+
+        fmpq_poly_set_coeff_fmpq(p, i-1, q);
+
+        MapleALGEB_Printf(kv, str);
+
+    }
+
+    fmpq_poly_canonicalise(p);
+
+}
+
 
 
 #endif

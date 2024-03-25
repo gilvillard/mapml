@@ -25,6 +25,44 @@
 #include "conversion.h"
 
 
+ALGEB coeffs(MKernelVector kv, ALGEB *args){
+
+    ALGEB pol=args[1];
+
+    fmpq_poly_t p;
+
+    //get_fmpq_poly(p, kv, pol); 
+
+    //MapleALGEB_Printf(kv, " ++++  \n");
+
+    fmpq_t res;
+
+    fmpq_init(res);
+
+    //fmpq_set_str(q, MapleToString(kv,rat), 10);
+
+    MapleALGEB_Printf(kv, " \n");
+    MapleALGEB_Printf(kv, " ++++  \n");
+
+
+    fmpq_poly_get_coeff_fmpq(res, p, 0);
+    
+    MapleALGEB_Printf(kv, " \n");
+    MapleALGEB_Printf(kv, " ++++  \n");
+
+    ALGEB s;
+    char *str;
+    str = fmpq_get_str(str, 10, res);
+
+    //*s=ToMapleString(kv,str);
+
+    MapleALGEB_Printf(kv, " ---- \n");
+    MapleALGEB_Printf(kv, str);
+
+    return ToMapleString(kv,str);
+
+}
+
 
 /**********************************************************
  * 

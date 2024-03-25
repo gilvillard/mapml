@@ -24,6 +24,10 @@
 #include "mapml.h"
 #include "conversion.h"
 
+
+ALGEB coeffs(MKernelVector kv, ALGEB *args);
+
+
 /**********************************************************
  * 
  * modulo matrix polynomial determinant  

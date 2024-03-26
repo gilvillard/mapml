@@ -25,7 +25,7 @@
 #include "conversion.h"
 
 
-ALGEB coeffs(MKernelVector kv, ALGEB *args);
+ALGEB pm_coeffs(MKernelVector kv, ALGEB *args);
 
 
 /**********************************************************

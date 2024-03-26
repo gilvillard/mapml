@@ -24,42 +24,146 @@
 #include "mapml.h"
 #include "conversion.h"
 
-
-ALGEB coeffs(MKernelVector kv, ALGEB *args){
-
-    ALGEB pol=args[1];
-
-    fmpq_poly_t p;
-
-    //get_fmpq_poly(p, kv, pol); 
-
-    //MapleALGEB_Printf(kv, " ++++  \n");
-
-    fmpq_t res;
-
-    fmpq_init(res);
-
-    //fmpq_set_str(q, MapleToString(kv,rat), 10);
-
-    MapleALGEB_Printf(kv, " \n");
-    MapleALGEB_Printf(kv, " ++++  \n");
+/***********************************************************
+ * 
+ * 
+ *  Reccurence of order m  (m+1 coefficients) 
+ * 
+ * 
+ * 
+ * *********************************************************/
 
 
-    fmpq_poly_get_coeff_fmpq(res, p, 0);
+ALGEB pm_coeffs(MKernelVector kv, ALGEB *args){
+
+    slong i,k;
+
+    char *str;  // tmp for trace 
     
+    // The order of the recurrence
+    M_INT m=MapleToInteger32(kv,args[1]);
+
+    // The polynomial coefficients of teh recurrence 
+    ALGEB vpol=args[2];
+
+    fmpq_poly_t vp[m+1];  // Gives the polynomial recurrence 
+    get_fmpq_poly_array(vp, kv, vpol); 
+
+    // N+1 terms requested 
+    M_INT N;
+    N=MapleToInteger64(kv,args[3]);
+
     MapleALGEB_Printf(kv, " \n");
-    MapleALGEB_Printf(kv, " ++++  \n");
+    MapleALGEB_Printf(kv, " ---- %a terms \n",ToMapleInteger(kv,N));
 
-    ALGEB s;
-    char *str;
-    str = fmpq_get_str(str, 10, res);
+    // The initial conditions 
+    //-----------------------
 
-    //*s=ToMapleString(kv,str);
+    fmpq_t cinit[m];  
+    for (i=0; i<m; i++){
 
-    MapleALGEB_Printf(kv, " ---- \n");
-    MapleALGEB_Printf(kv, str);
+        fmpq_init(cinit[i]);
 
-    return ToMapleString(kv,str);
+        fmpq_set_str(cinit[i], MapleToString(kv,args[4+i]), 10);
+
+        //str = fmpq_get_str(NULL, 10, cinit[i]);
+        //MapleALGEB_Printf(kv, str);
+        //MapleALGEB_Printf(kv, "  \n");
+        //MapleALGEB_Printf(kv, "  \n");
+
+    }
+
+    
+    // The resulting rationals, terms of the sequence 
+    //-----------------------------------------------
+
+    fmpq_t L[N+1];    
+
+
+    for (i=0; i<m; i++){
+
+        fmpq_init(L[i]);
+        fmpq_set(L[i],cinit[i]);
+
+    }
+
+
+    fmpq_t evalp[m+1];  // the evaluation of the polynomials 
+
+    // Main loop 
+    //----------
+
+    fmpq_t res,tt;
+    fmpq_init(res);
+    fmpq_init(tt);
+
+    fmpz_t e;
+    fmpz_init(e);
+
+    for (k=m; k<N+1; k++){
+
+        fmpq_init(L[k]); // Set to 0 
+
+        // Evaluations
+        for (i=0; i<m+1; i++){
+
+            fmpz_init_set_si(e,k-m);
+
+            fmpq_poly_evaluate_fmpz(evalp[i], vp[i], e);
+            
+        }
+        
+        fmpq_mul(res, L[k-m], evalp[0]);
+
+        for (i=1; i<m; i++){
+
+            fmpq_addmul(res,L[k-m+i],evalp[i]);
+            
+        }
+
+        fmpq_neg(tt,res);
+        fmpq_div(L[k],tt,evalp[m]);
+
+    } // End main loop k 
+
+
+
+    ALGEB listcoeff;
+
+    listcoeff= MapleListAlloc(kv, N+1);
+
+    for (k = 1; k <= N+1; k++) {
+
+        str = fmpq_get_str(NULL, 10, L[k-1]);
+
+        MapleListAssign(kv,listcoeff,k, ToMapleString(kv,str));
+    }
+
+    return listcoeff;
+
+
+
+    // //+++++++++++++++++++++++++++++++++
+
+
+    // // Dummy print
+
+    // MapleALGEB_Printf(kv, " \n");
+    // MapleALGEB_Printf(kv, " ---- \n");
+
+
+    // for (i=0; i<N+1; i++){
+    
+    //     str = fmpq_get_str(NULL, 10, L[i]);
+    //     MapleALGEB_Printf(kv, str);
+    //     MapleALGEB_Printf(kv, "  \n");
+    //     MapleALGEB_Printf(kv, " \n");
+
+    // }
+    // //MapleALGEB_Printf(kv, " \n");
+    // //MapleALGEB_Printf(kv, " ++++  \n");
+
+    // return ToMapleString(kv,str);
 
 }
 

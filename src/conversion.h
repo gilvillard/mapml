@@ -106,6 +106,8 @@ void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVect
 
 void get_fmpq_poly(fmpq_poly_t p, MKernelVector kv, ALGEB vect);
 
+void get_fmpq_poly_array(fmpq_poly_t *vp, MKernelVector kv, ALGEB maple);
+
 #endif
 
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

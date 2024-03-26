@@ -130,7 +130,7 @@ ALGEB nmod_mat_poly_to_algeb(MKernelVector kv, const nmod_mat_poly_t Ain){
 
 /**********************************************************
  * 
- * Converts an nmod_poly_mat to a mapel matrix of lists  
+ * Converts an nmod_poly_mat to a maple matrix of lists  
  *   !! no modulus is transmitted
  * 
  ***********************************************************/
@@ -362,7 +362,7 @@ void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelV
  * 
  *************************************************************/
 
-    void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect_A){
+void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect_A){
 
 
     //ALGEB maple_A = args[1]; // Doesn't work with P in input? 
@@ -449,7 +449,7 @@ void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelV
  * 
  * TODO 
  * 
- *  from a list of strings 
+ *  from a vector of strings 
  * 
  *************************************************************/
 
@@ -481,30 +481,48 @@ void get_fmpq_poly(fmpq_poly_t p, MKernelVector kv, ALGEB mappol){
 
         fmpq_set_str(q, MapleToString(kv,tmp.dag), 10);
 
-
-        //++++++++++++
-        MapleALGEB_Printf(kv, " \n");
-        MapleALGEB_Printf(kv, " \n");
-        MapleALGEB_Printf(kv, MapleToString(kv,tmp.dag));
-
-
-        MapleALGEB_Printf(kv, " \n");
-        
-        char *str;
-        str=fmpq_get_str(str, 10, q);
-        
-
-        //+++++++++++++++++++++
-
         fmpq_poly_set_coeff_fmpq(p, i-1, q);
-
-        MapleALGEB_Printf(kv, str);
-
     }
 
     fmpq_poly_canonicalise(p);
 
 }
+
+/************************************************************
+ * 
+ * TODO 
+ * 
+ *  from a vector of vectors strings 
+ * 
+ *  An array fmpq_poly_t[m] : it is initialized outside !!!! 
+ * 
+ *************************************************************/
+
+
+void get_fmpq_poly_array(fmpq_poly_t *vp, MKernelVector kv, ALGEB vmaple){
+
+    M_INT m;   // slong flint or M_INT ? 
+
+    m = RTableUpperBound(kv, vmaple, 1);
+
+    M_INT index[1];  // The vector of polynomials 
+
+    RTableData tmp; 
+
+    // Loop on the entries 
+
+    for (slong i=1; i<m+1; i++){
+        
+            index[0]=i;
+           
+            tmp = RTableSelect(kv,vmaple,index);
+
+            get_fmpq_poly(vp[i-1], kv, tmp.dag);
+
+        }
+
+    }
+
 
 
 

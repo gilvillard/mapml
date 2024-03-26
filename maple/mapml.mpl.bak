@@ -21,7 +21,7 @@ mapml:= module()
 	# ------------------------------
 
 	export pmPolyRT,pmPolyMatRT,pmMatPolyRT,pmCheckIo, pmDeterminant, pmCheckDeterminant, 
-	       pmCheck, pmDiffMBasis, pmMatMBasis, pmMatPMBasis, Dev, coeffs:
+	       pmCheck, pmDiffMBasis, pmMatMBasis, pmMatPMBasis, Dev, pmgetcoeffs:
 
 
 	option package, load=Init, unload=End: 
@@ -74,7 +74,7 @@ mapml:= module()
 
 	    description "YYY";
 
-		export polynomial_rt,polymat_rt, matpoly_rt, pm_determinant, pm_diff_mbasis, pm_matrix_mbasis, pm_matrix_pmbasis;					
+		export polynomial_rt,polymat_rt, matpoly_rt, pm_determinant, pm_diff_mbasis, pm_matrix_mbasis, pm_matrix_pmbasis,pm_coeffs;					
 
 		polynomial_rt := define_external("polynomial_rt",MAPLE, LIB = mapml_lib);
 
@@ -90,13 +90,40 @@ mapml:= module()
 
 		pm_matrix_pmbasis := define_external("pm_matrix_pmbasis",MAPLE, LIB = mapml_lib);
 
+		pm_coeffs := define_external("pm_coeffs",MAPLE, LIB = mapml_lib);
+
 	end module: 	
 
 
-	coeffs := define_external("coeffs",MAPLE, LIB = mapml_lib);
 
 	#  Definition of the high level submodule 
 	#  --------------------------------------
+
+
+	pmgetcoeffs:=proc(rec,u,n,N) local i,vp,ord,V,cinits; 
+
+
+		#userinfo(1,'gfun',sprintf("+++++ : %a\n",rec));
+		#userinfo(1,'gfun',sprintf("+++++ : %a",u(n)));
+
+
+		ord:=nops(rec)-1;
+
+		vp:=Vector([seq(coeff(rec[1],u(n+i),1),i=0..ord)]):
+
+		V:=Vector(ord+1):
+		
+		for i from 1 to ord+1 do 
+			V[i]:=map(t->convert(t,string),CoefficientVector(vp[i],n)); 
+		od: 
+
+		cinits:=[seq(convert(op(2,rec[i]),string),i=2..2+ord-1)];
+
+		return map(parse,Dev:-pm_coeffs(ord,V,N, seq(cinits[i],i=1..ord)));
+
+	end proc: 
+
+
 
 	pmDeterminant :=proc(A, q) local t, vect_A; 
 

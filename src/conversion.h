@@ -72,7 +72,7 @@ ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A);
  *************************************************************/
 
 
-void get_nmod_poly(nmod_poly_t p,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect);
+void get_nmod_poly(nmod_poly_t p,   const ulong modulus, MKernelVector kv, ALGEB vect);
 
 
 /************************************************************
@@ -87,7 +87,7 @@ void get_nmod_poly(nmod_poly_t p,   const mp_limb_t modulus, MKernelVector kv, A
  *************************************************************/
 
 
-void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect_A);
+void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const ulong modulus, MKernelVector kv, ALGEB vect_A);
 
 
 /************************************************************
@@ -101,7 +101,7 @@ void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelV
  * 
  *************************************************************/
 
-void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect_A);
+void get_nmod_poly_mat(nmod_poly_mat_t A,   const ulong modulus, MKernelVector kv, ALGEB vect_A);
 
 
 void get_fmpq_poly(fmpq_poly_t p, MKernelVector kv, ALGEB vect);

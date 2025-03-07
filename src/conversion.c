@@ -206,7 +206,7 @@ ALGEB nmod_poly_mat_to_algeb(MKernelVector kv, const nmod_poly_mat_t A){
  *************************************************************/
 
 
-void get_nmod_poly(nmod_poly_t p,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect){
+void get_nmod_poly(nmod_poly_t p,   const ulong modulus, MKernelVector kv, ALGEB vect){
 
 
     nmod_poly_init(p, modulus); 
@@ -246,7 +246,7 @@ void get_nmod_poly(nmod_poly_t p,   const mp_limb_t modulus, MKernelVector kv, A
  * 
  ***********************************************************/
 
-// void get_nmod_poly(nmod_poly_t p, const mp_limb_t modulus, MKernelVector kv, ALGEB stringpol){ 
+// void get_nmod_poly(nmod_poly_t p, const ulong modulus, MKernelVector kv, ALGEB stringpol){ 
 
 //     nmod_poly_init(p, modulus);
 
@@ -290,7 +290,7 @@ void get_nmod_poly(nmod_poly_t p,   const mp_limb_t modulus, MKernelVector kv, A
  *************************************************************/
 
 
-void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect_A){
+void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const ulong modulus, MKernelVector kv, ALGEB vect_A){
 
 
     //ALGEB maple_A = args[1]; // Doesn't work with P in input? 
@@ -362,7 +362,7 @@ void get_nmod_mat_poly(nmod_mat_poly_t Aout,   const mp_limb_t modulus, MKernelV
  * 
  *************************************************************/
 
-void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB vect_A){
+void get_nmod_poly_mat(nmod_poly_mat_t A,   const ulong modulus, MKernelVector kv, ALGEB vect_A){
 
 
     //ALGEB maple_A = args[1]; // Doesn't work with P in input? 
@@ -414,7 +414,7 @@ void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVect
     // MapleALGEB_Printf(kv, " Time in get %f ms\n", ToMapleFloat(kv,t*1000));
     }
 
-// void get_nmod_poly_mat(nmod_poly_mat_t A,   const mp_limb_t modulus, MKernelVector kv, ALGEB string_A){
+// void get_nmod_poly_mat(nmod_poly_mat_t A,   const ulong modulus, MKernelVector kv, ALGEB string_A){
 
 
 //     //ALGEB maple_A = args[1]; // Doesn't work with P in input? 

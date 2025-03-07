@@ -43,7 +43,7 @@ ALGEB polynomial_rt(MKernelVector kv, ALGEB *args){
 
     ALGEB vect=args[1];
 
-    mp_limb_t modulus = MapleToInteger64(kv,args[2]);
+    ulong modulus = MapleToInteger64(kv,args[2]);
 
     nmod_poly_t p;  
     // The polynomial is initialized by the call below
@@ -74,7 +74,7 @@ ALGEB matpoly_rt(MKernelVector kv, ALGEB *args){
 
     ALGEB vect_mat=args[1];
 
-    mp_limb_t modulus = MapleToInteger64(kv,args[2]);
+    ulong modulus = MapleToInteger64(kv,args[2]);
 
     nmod_mat_poly_t A;
 
@@ -104,7 +104,7 @@ ALGEB polymat_rt(MKernelVector kv, ALGEB *args){
 
     ALGEB vect_mat=args[1];
 
-    mp_limb_t modulus = MapleToInteger64(kv,args[2]);
+    ulong modulus = MapleToInteger64(kv,args[2]);
 
     nmod_poly_mat_t A;
 

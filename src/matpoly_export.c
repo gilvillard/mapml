@@ -184,7 +184,7 @@ ALGEB pm_determinant(MKernelVector kv, ALGEB *args){
 
     ALGEB vectmat=args[1];
 
-    mp_limb_t modulus = MapleToInteger64(kv,args[2]);
+    ulong modulus = MapleToInteger64(kv,args[2]);
 
     nmod_poly_mat_t A;
 
@@ -227,7 +227,7 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
     //double t = 0.0;
     //clock_t tt;
 
-    mp_limb_t modulus = MapleToInteger64(kv,args[4]);
+    ulong modulus = MapleToInteger64(kv,args[4]);
 
     nmod_poly_t p;    // The polynomial that will be differentiated 
     nmod_poly_init(p,modulus);
@@ -326,7 +326,7 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
 
    ALGEB vectmat=args[2];
 
-   mp_limb_t modulus = MapleToInteger64(kv,args[4]);
+   ulong modulus = MapleToInteger64(kv,args[4]);
 
    nmod_poly_mat_t A;
 
@@ -406,7 +406,7 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
 
    ALGEB vectmat=args[2];
 
-   mp_limb_t modulus = MapleToInteger64(kv,args[4]);
+   ulong modulus = MapleToInteger64(kv,args[4]);
 
    nmod_poly_mat_t A;
 

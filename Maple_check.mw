@@ -115,6 +115,8 @@
 <Group hide-input="false" labelreference="L225" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
 <Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal">define_external(&quot;nmod_poly_mat_init&quot;, MAPLE, LIB = &quot;/Users/gvillard/univ-linalg/flint-extras/libpmlflint.dylib&quot;):</Text-field>
 </Input>
+<Output><Text-field style="HyperlinkError" layout="HyperlinkError"><Hyperlink linktarget="http://www.maplesoft.com/support/help/errors/view.aspx?path=Error,%20external%20linking%3A%20error%20loading%20external%20library%20%2FUsers%2Fgvillard%2Funiv-linalg%2Fflint-extras%2Flibpmlflint.dylib%3A%20dlopen(%2FUsers%2Fgvillard%2Funiv-linalg%2Fflint-extras%2Flibpmlflint.dylib,%200x0081)%3A%20tried%3A%20'%2FLi" hyperlink="true"><Font style="HyperlinkError">Error, external linking: error loading external library /Users/gvillard/univ-linalg/flint-extras/libpmlflint.dylib: dlopen(/Users/gvillard/univ-linalg/flint-extras/libpmlflint.dylib, 0x0081): tried: '/Library/Frameworks/Maple.framework/Versions/2024/bin.APPLE_ARM64_MACOS/libpmlflint.dylib' (no such file), '/Library/Frameworks/Maple.framework/Versions/2024/bin.APPLE_ARM64_MACOS/eps_export/libpmlflint.dylib' (no such file), '/Library/Frameworks/Maple.framework/Versions/2024/jre.APPLE_ARM64_MACOS/bin//server/libpmlflint.dylib' (no such file), '/libpmlflint.dylib' (no such file), '/Users/gvillard/univ-linalg/flint-extras/libpmlflint.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/gvillard/univ-linalg/flint-extras/libpmlflint.dylib' (no such file), '/Users/gvillard/univ-linalg/flint-extras/libpmlflint.dylib' (no such file)</Font></Hyperlink></Text-field>
+</Output>
 </Group>
 <Group labelreference="L226" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
 <Input><Text-field prompt="&gt; " style="Maple Input" layout="Normal"></Text-field>
@@ -129,6 +131,8 @@
 </Input>
 <Output><Text-field style="Line Printed Output" layout="Line Printed Output">Loading mapml
 </Text-field>
+</Output>
+<Output><Text-field style="HyperlinkError" layout="HyperlinkError"><Hyperlink linktarget="http://www.maplesoft.com/support/help/errors/view.aspx?path=Error,%20(in%20anonymous%20module)%20external%20linking%3A%20error%20loading%20external%20library%20%2FUsers%2Fgvillard%2Funiv-linalg%2Fflint-extras%2Flibpmlflint.dylib%3A%20dlopen(%2FUsers%2Fgvillard%2Funiv-linalg%2Fflint-extras%2Flibpmlflint.dylib,%200x" hyperlink="true"><Font style="HyperlinkError">Error, (in anonymous module) external linking: error loading external library /Users/gvillard/univ-linalg/flint-extras/libpmlflint.dylib: dlopen(/Users/gvillard/univ-linalg/flint-extras/libpmlflint.dylib, 0x0081): tried: '/Library/Frameworks/Maple.framework/Versions/2024/bin.APPLE_ARM64_MACOS/libpmlflint.dylib' (no such file), '/Library/Frameworks/Maple.framework/Versions/2024/bin.APPLE_ARM64_MACOS/eps_export/libpmlflint.dylib' (no such file), '/Library/Frameworks/Maple.framework/Versions/2024/jre.APPLE_ARM64_MACOS/bin//server/libpmlflint.dylib' (no such file), '/libpmlflint.dylib' (no such file), '/Users/gvillard/univ-linalg/flint-extras/libpmlflint.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/Users/gvillard/univ-linalg/flint-extras/libpmlflint.dylib' (no such file), '/Users/gvillard/univ-linalg/flint-extras/libpmlflint.dylib' (no such file)</Font></Hyperlink></Text-field>
 </Output>
 </Group>
 <Group hide-input="false" labelreference="L212" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">

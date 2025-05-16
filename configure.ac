@@ -110,7 +110,10 @@ LIBS="$LIBS -lm -lpthread"
 # Check pml
 #----------
 
-#GV bien voir pour cette bibliothèque 
+#GV bien voir pour cette bibliothèque, à reprendre 
+
+PML_INCDIR="/usr/local/include"
+PML_LIBDIR="/usr/local/lib"
 
 AC_ARG_WITH(pml,
       AS_HELP_STRING([--with-pml=@<:@=DIR@:>@], [PML install directory]), [
@@ -121,10 +124,10 @@ AC_ARG_WITH(pml,
 CPPFLAGS="$CPPFLAGS -I${PML_INCDIR}"
 LDFLAGS="$LDFLAGS -L${PML_LIBDIR}"
 
-LIBS="$LIBS -lpmlflint"
+LIBS="$LIBS -lpml"
 
 
-AC_CHECK_FILE([$PML_INCDIR/nmod_extra.h],
+AC_CHECK_FILE([$PML_INCDIR/pml/nmod_extra.h],
                 [AC_DEFINE([HAVE_PML], [1],
                 [with nmod_extra.h])],
                 [AC_MSG_ERROR([Sorry, PML nmod_extra.h location missing])],

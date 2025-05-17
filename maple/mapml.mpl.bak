@@ -7,7 +7,7 @@ mapml:= module()
 
         description "XXX";
 
-	local pmlflintpath, mapmlpath, pmlflint_lib, mapml_lib, ff, 
+	local pmlpath, mapmlpath, pml_lib, mapml_lib, ff, 
 	      tottest, succeeded;
 
 
@@ -27,12 +27,12 @@ mapml:= module()
 	option package, load=Init, unload=End: 
 	
 	
-	pmlflintpath := "path1"; 
+	pmlpath := "path1"; 
 
 	mapmlpath := "path2";
 
 	# How does maple find the other libraries? 
-	pmlflint_lib := cat(pmlflintpath,"/libpmlflint.dylib");
+	pml_lib := cat(pmlpath,"/libpml.dylib");
         mapml_lib := cat(mapmlpath,"/lib/libmapml.dylib");
 
 	ModuleLoad:= proc( )
@@ -52,7 +52,7 @@ mapml:= module()
 
     # GV rather put in ModuleLoad ? 
     
-	ff:=define_external("nmod_poly_mat_init", MAPLE, LIB = pmlflint_lib):
+	ff:=define_external("nmod_poly_mat_init", MAPLE, LIB = pml_lib):
 		
 
 	# Local functions for conversions

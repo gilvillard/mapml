@@ -26,7 +26,7 @@
 #include <flint/fmpq_poly.h>
 #include "maplec.h"
 
-#include "nmod_poly_mat_extra.h"
+#include "pml/nmod_poly_mat_extra.h"
 
 
 

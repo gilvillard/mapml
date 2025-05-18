@@ -45,8 +45,8 @@ LDFLAGS=${LDFLAGS:-$DEFAULT_LDFLAGS}
 #Defaults 
 
 
-AC_SUBST(MAPLE_INCDIR,"/Library/Frameworks/Maple.framework/Versions/2023/extern/include")
-AC_SUBST(MAPLE_LIBDIR,"/Library/Frameworks/Maple.framework/Versions/2023/bin.APPLE_ARM64_MACOS")
+AC_SUBST(MAPLE_INCDIR,"/Library/Frameworks/Maple.framework/Versions/2024/extern/include")
+AC_SUBST(MAPLE_LIBDIR,"/Library/Frameworks/Maple.framework/Versions/2024/bin.APPLE_ARM64_MACOS")
 
 LT_INIT
 

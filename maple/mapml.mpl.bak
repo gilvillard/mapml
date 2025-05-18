@@ -20,9 +20,15 @@ mapml:= module()
 	# High level submodule functions 
 	# ------------------------------
 
-	export pmPolyRT,pmPolyMatRT,pmMatPolyRT,pmCheckIo, pmDeterminant, pmCheckDeterminant, 
+	export pmPolyRT,pmPolyMatRT,pmMatPolyRT,pmCheckIo, pmCheckDeterminant, 
 	       pmCheck, pmDiffMBasis, pmMatMBasis, pmMatPMBasis, Dev, pmgetcoeffs:
 
+	
+
+	# put global, otherwise and export of `mod/pmDeterminant` does not seem to allow 
+	# a call using eg pmDeterminant(A) mod q 
+
+	global `mod/pmDeterminant`;
 
 	option package, load=Init, unload=End: 
 	
@@ -124,7 +130,7 @@ mapml:= module()
 	end proc: 
 
 
-	pmDeterminant :=proc(A, q) local t, vect_A; 
+	`mod/pmDeterminant`:=proc(A,q) local t, vect_A; 
 
 		vect_A:=map(t->CoefficientVector(t,x),A);
 

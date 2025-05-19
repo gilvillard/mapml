@@ -525,7 +525,6 @@ void get_fmpq_poly_array(fmpq_poly_t *vp, MKernelVector kv, ALGEB vmaple){
 
 
 
-
 #endif
 
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */

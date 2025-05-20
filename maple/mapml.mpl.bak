@@ -17,18 +17,19 @@ mapml:= module()
 	local convertpol; 
 
 
+
 	# High level submodule functions 
 	# ------------------------------
 
 	export pmPolyRT,pmPolyMatRT,pmMatPolyRT,pmCheckIo, pmCheckDeterminant, 
-	       pmCheck, pmDiffMBasis, pmMatMBasis, pmMatPMBasis, Dev, pmgetcoeffs:
+	       pmCheck, pmDiffMBasis, pmMatPMBasis, Dev, pmgetcoeffs;
 
 	
 
 	# put global, otherwise and export of `mod/pmDeterminant` does not seem to allow 
 	# a call using eg pmDeterminant(A) mod q 
 
-	global `mod/pmDeterminant`;
+	global `mod/pmDeterminant`,`mod/pmWeakPopov`,`mod/pmRowWeakPopov`,`mod/pmMBasis`,`mod/pmRowMBasis`;
 
 	option package, load=Init, unload=End: 
 	
@@ -43,7 +44,7 @@ mapml:= module()
 
 	ModuleLoad:= proc( )
 		#define_external("nmod_poly_mat_init", MAPLE, LIB = "/usr/local/lib/libpml.dylib"):
-        printf("Loading mapml\n");
+        printf("Loading mapml, ");
     end proc:
 
     # Explicitly call ModuleLoad here so the type is registered when this
@@ -58,9 +59,10 @@ mapml:= module()
     #end proc:
 
     # GV rather put in ModuleLoad ? 
-    
-    printf("External pml: %s",pml_lib);
+    printf("external %s\n",pml_lib);
 	ff:=define_external("nmod_poly_mat_init", MAPLE, LIB = pml_lib):
+
+	printf("[pmDeterminant,pmWeakPopov,pmRowWeakPopov]");
 		
 
 	# Local functions for conversions
@@ -82,7 +84,7 @@ mapml:= module()
 
 	    description "YYY";
 
-		export polynomial_rt,polymat_rt, matpoly_rt, pm_determinant, pm_diff_mbasis, pm_matrix_mbasis, pm_matrix_pmbasis,pm_coeffs;					
+		export polynomial_rt,polymat_rt, matpoly_rt, pm_determinant, pm_diff_mbasis, pm_matrix_mbasis, pm_matrix_pmbasis,pm_coeffs,pm_weakpopov;					
 
 		polynomial_rt := define_external("polynomial_rt",MAPLE, LIB = mapml_lib);
 
@@ -99,6 +101,8 @@ mapml:= module()
 		pm_matrix_pmbasis := define_external("pm_matrix_pmbasis",MAPLE, LIB = mapml_lib);
 
 		pm_coeffs := define_external("pm_coeffs",MAPLE, LIB = mapml_lib);
+
+		pm_weakpopov := define_external("pm_weakpopov",MAPLE, LIB = mapml_lib);
 
 	end module: 	
 
@@ -122,7 +126,7 @@ mapml:= module()
 		V:=Vector(ord+1):
 		
 		for i from 1 to ord+1 do 
-			V[i]:=map(t->convert(t,string),CoefficientVector(vp[i],n)); 
+			V[i]:=map(t->convert(t,string),PolynomialTools:-CoefficientVector(vp[i],n)); 
 		od: 
 
 		cinits:=[seq(convert(op(2,rec[i]),string),i=2..2+ord-1)];
@@ -132,14 +136,43 @@ mapml:= module()
 	end proc: 
 
 
-	`mod/pmDeterminant`:=proc(A,q) local t, vect_A; 
+	`mod/pmDeterminant`:=proc(A,x,q) local t, vect_A; 
 
-		vect_A:=map(t->CoefficientVector(t,x),A);
+		vect_A:=map(t->PolynomialTools:-CoefficientVector(t,x),A);
 
-		return FromCoefficientList(Dev:-pm_determinant(vect_A,q),x);
+		return PolynomialTools:-FromCoefficientList(Dev:-pm_determinant(vect_A,q),x);
 
 	end proc: 
 
+
+	`mod/pmWeakPopov`:=proc(A,x,shift,q) local t, vect_A,res; 
+
+
+		vect_A:=map(t->PolynomialTools:-CoefficientVector(t,x),LinearAlgebra:-Transpose(A));
+	
+
+		res:=Dev:-pm_weakpopov(vect_A, shift, q);
+
+		res := map(t->PolynomialTools:-FromCoefficientList(t, x), res[1]);
+
+		return(LinearAlgebra:-Transpose(res));
+		
+
+	end proc: 
+
+	`mod/pmRowWeakPopov`:=proc(A,x,shift,q) local t, vect_A,res; 
+
+		#if (nargs=3) then q:=orient; orient=0; fi: 
+
+		vect_A:=map(t->PolynomialTools:-CoefficientVector(t,x),A); 
+
+		res:=Dev:-pm_weakpopov(vect_A, shift, q);
+
+		res := map(t->PolynomialTools:-FromCoefficientList(t, x), res[1]);
+
+		return res; 
+		 
+	end proc: 
 
 
 	pmDiffMBasis :=proc(shift, p, order, x, q,method) local t, vect_p,res,tt,i,M,dct; 
@@ -150,7 +183,7 @@ mapml:= module()
 
 		tt:=time();
 
-		vect_p:=CoefficientVector(p,x);
+		vect_p:=PolynomialTools:-CoefficientVector(p,x);
 
 		tt:=time()-tt;
 
@@ -167,7 +200,7 @@ mapml:= module()
 
 		tt:=time();
 
-		res := map(t->FromCoefficientList(t, x), res[1]),res[2][i]: 
+		res := map(t->PolynomialTools:-FromCoefficientList(t, x), res[1]),res[2][i]: 
 
 		tt:=time()-tt;
 
@@ -180,12 +213,11 @@ mapml:= module()
 	end proc: 
 
 
-	pmMatMBasis :=proc(shift, A, order, x, q) local t,vect_A,res,tt; 
-	
-		
+	`mod/pmRowMBasis` :=proc(A, x, shift, order, q) local t,vect_A,res,tt; 
+
 		tt:=time();
 
-		vect_A:=map(t->CoefficientVector(t,x),A);
+		vect_A:=map(t->PolynomialTools:-CoefficientVector(t,x),A);
 
 		tt:=time()-tt;
 
@@ -195,7 +227,7 @@ mapml:= module()
 
 		tt:=time();
 
-		res := map(t->FromCoefficientList(t, x), res[1]),res[2]: 
+		res := map(t->PolynomialTools:-FromCoefficientList(t, x), res[1]),res[2]: 
 
 		tt:=time()-tt;
 
@@ -206,12 +238,23 @@ mapml:= module()
 	end proc: 
 
 
+	`mod/pmMBasis` :=proc(A, x, shift, order, q) local res; 
+	
+
+		res:=`mod/pmRowMBasis`(LinearAlgebra:-Transpose(A), x, shift, order, q);
+
+
+		return(LinearAlgebra:-Transpose(res[1]),res[2]):
+
+	end proc: 
+
+
 	pmMatPMBasis :=proc(shift, A, order, x, q) local t,vect_A,res,tt; 
 	
 		
 		tt:=time();
 
-		vect_A:=map(t->CoefficientVector(t,x),A);
+		vect_A:=map(t->PolynomialTools:-CoefficientVector(t,x),A);
 
 		tt:=time()-tt;
 
@@ -221,7 +264,7 @@ mapml:= module()
 
 		tt:=time();
 
-		res := map(t->FromCoefficientList(t, x), res[1]),res[2]: 
+		res := map(t->PolynomialTools:-FromCoefficientList(t, x), res[1]),res[2]: 
 
 		tt:=time()-tt;
 
@@ -247,11 +290,11 @@ mapml:= module()
 		n:=4; 
 		
 		rr:=t->randpoly(x,degree=2) mod q:
-		A:=RandomMatrix(n,n,generator=rr);
+		A:=LinearAlgebra:-RandomMatrix(n,n,generator=rr);
 		
-		d1:=pmDeterminant(A,q);
+		d1:=pmDeterminant(A,x,q);
 
-		d2:=Determinant(A) mod q;
+		d2:=LinearAlgebra:-Determinant(A) mod q;
 
 		val:= expand(d1-d2) mod q;
 
@@ -261,11 +304,11 @@ mapml:= module()
 		n:=30; 
 		
 		rr:=t->randpoly(x,degree=4) mod q:
-		A:=RandomMatrix(n,n,generator=rr);
+		A:=LinearAlgebra:-RandomMatrix(n,n,generator=rr);
 		
-		d1:=pmDeterminant(A,q);
+		d1:=pmDeterminant(A,x,q);
 
-		d2:=Determinant(A) mod q;
+		d2:=LinearAlgebra:-Determinant(A) mod q;
 
 		val:= expand(d1-d2) mod q;
 
@@ -276,11 +319,11 @@ mapml:= module()
 		n:=6; 
 		
 		rr:=t->randpoly(x,degree=36) mod q:
-		A:=RandomMatrix(n,n,generator=rr);
+		A:=LinearAlgebra:-RandomMatrix(n,n,generator=rr);
 		
-		d1:=pmDeterminant(A,q);
+		d1:=pmDeterminant(A,x,q);
 
-		d2:=Determinant(A) mod q;
+		d2:=LinearAlgebra:-Determinant(A) mod q;
 
 		val:= expand(d1-d2) mod q;
 
@@ -297,17 +340,17 @@ mapml:= module()
 
 	pmPolyRT:=proc(p,modulus) local vect;
 
-   	   vect:=CoefficientVector(p,x);
+   	   vect:=PolynomialTools:-CoefficientVector(p,x);
 
-	   return(FromCoefficientList(Dev:-polynomial_rt(vect,modulus),x)): 
+	   return(PolynomialTools:-FromCoefficientList(Dev:-polynomial_rt(vect,modulus),x)): 
 
 	end proc:
 
 	pmMatPolyRT:=proc(A,modulus) local vect_A,t;
 
-   	   vect_A:=map(t->CoefficientVector(t,x),A);
+   	   vect_A:=map(t->PolynomialTools:-CoefficientVector(t,x),A);
 
-	   return(map(t->FromCoefficientList(t, x), Dev:-matpoly_rt(vect_A,modulus))): 
+	   return(map(t->PolynomialTools:-FromCoefficientList(t, x), Dev:-matpoly_rt(vect_A,modulus))): 
 
 	   #return(map(t->op(sscanf(t, "%a")), Dev:-polymat_rt(vect_A,modulus))):
 
@@ -315,9 +358,9 @@ mapml:= module()
 
 	pmPolyMatRT:=proc(A,modulus) local vect_A;
 
-   		vect_A:=map(t->CoefficientVector(t,x),A);
+   		vect_A:=map(t->PolynomialTools:-CoefficientVector(t,x),A);
 
-		return(map(t->FromCoefficientList(t, x), Dev:-polymat_rt(vect_A,modulus))): 
+		return(map(t->PolynomialTools:-FromCoefficientList(t, x), Dev:-polymat_rt(vect_A,modulus))): 
 
 		#return(map(t->op(sscanf(t, "%a")), Dev:-polymat_rt(vect_A,modulus))): 
 
@@ -364,10 +407,10 @@ mapml:= module()
 		m:=2; n:=4; 
 		Z:=Matrix(m,n,0);
 		rr:=t->randpoly(x,degree=2) mod q:
-		A:=RandomMatrix(m,n,generator=rr);
+		A:=LinearAlgebra:-RandomMatrix(m,n,generator=rr);
 		B:=pmPolyMatRT(A,q);
 
-		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+		val:=LinearAlgebra:-Equal(map(t-> expand(t) mod q,A-B),Z);
 
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
@@ -375,10 +418,10 @@ mapml:= module()
 		m:=40; n:=44; 
 		Z:=Matrix(m,n,0);
 		rr:=t->randpoly(x,degree=8) mod q:
-		A:=RandomMatrix(m,n,generator=rr);
+		A:=LinearAlgebra:-RandomMatrix(m,n,generator=rr);
 		B:=pmPolyMatRT(A,q);
 
-		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+		val:=LinearAlgebra:-Equal(map(t-> expand(t) mod q,A-B),Z);
 
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
@@ -386,10 +429,10 @@ mapml:= module()
 		m:=40; n:=44; 
 		Z:=Matrix(m,n,0);
 		rr:=t->randpoly(x,degree=1) mod q:
-		A:=RandomMatrix(m,n,generator=rr);
+		A:=LinearAlgebra:-RandomMatrix(m,n,generator=rr);
 		B:=pmPolyMatRT(A,q);
 
-		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+		val:=LinearAlgebra:-Equal(map(t-> expand(t) mod q,A-B),Z);
 
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
@@ -397,10 +440,10 @@ mapml:= module()
 		m:=20; n:=16; 
 		Z:=Matrix(m,n,0);
 		rr:=t->randpoly(x,degree=8) mod q:
-		A:=RandomMatrix(m,n,generator=rr);
+		A:=LinearAlgebra:-RandomMatrix(m,n,generator=rr);
 		B:=pmPolyMatRT(A,q);
 
-		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+		val:=LinearAlgebra:-Equal(map(t-> expand(t) mod q,A-B),Z);
 
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
@@ -413,10 +456,10 @@ mapml:= module()
 		m:=2; n:=4; 
 		Z:=Matrix(m,n,0);
 		rr:=t->randpoly(x,degree=2) mod q:
-		A:=RandomMatrix(m,n,generator=rr);
+		A:=LinearAlgebra:-RandomMatrix(m,n,generator=rr);
 		B:=pmMatPolyRT(A,q);
 
-		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+		val:=LinearAlgebra:-Equal(map(t-> expand(t) mod q,A-B),Z);
 
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
@@ -424,10 +467,10 @@ mapml:= module()
 		m:=40; n:=44; 
 		Z:=Matrix(m,n,0);
 		rr:=t->randpoly(x,degree=8) mod q:
-		A:=RandomMatrix(m,n,generator=rr);
+		A:=LinearAlgebra:-RandomMatrix(m,n,generator=rr);
 		B:=pmMatPolyRT(A,q);
 
-		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+		val:=LinearAlgebra:-Equal(map(t-> expand(t) mod q,A-B),Z);
 
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
@@ -435,10 +478,10 @@ mapml:= module()
 		m:=40; n:=44; 
 		Z:=Matrix(m,n,0);
 		rr:=t->randpoly(x,degree=1) mod q:
-		A:=RandomMatrix(m,n,generator=rr);
+		A:=LinearAlgebra:-RandomMatrix(m,n,generator=rr);
 		B:=pmMatPolyRT(A,q);
 
-		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+		val:=LinearAlgebra:-Equal(map(t-> expand(t) mod q,A-B),Z);
 
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 
@@ -447,10 +490,10 @@ mapml:= module()
 		m:=20; n:=16; 
 		Z:=Matrix(m,n,0);
 		rr:=t->randpoly(x,degree=8) mod q:
-		A:=RandomMatrix(m,n,generator=rr);
+		A:=LinearAlgebra:-RandomMatrix(m,n,generator=rr);
 		B:=pmMatPolyRT(A,q);
 
-		val:=Equal(map(t-> expand(t) mod q,A-B),Z);
+		val:=LinearAlgebra:-Equal(map(t-> expand(t) mod q,A-B),Z);
 
 		if (val) then tottest:=tottest+1: succeeded:=succeeded+1: else tottest:=tottest+1: fi:
 

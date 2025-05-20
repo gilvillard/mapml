@@ -249,15 +249,15 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
 
 
     // Resulting basis  
-    nmod_poly_mat_t M;
-    nmod_poly_mat_init(M, m, m, modulus); 
+ nmod_poly_mat_t M;
+ nmod_poly_mat_init(M, m, m, modulus); 
 
-    ALGEB maple_shift = args[1];
-    slong shift[m];
-    for (ulong i = 0; i < m; i++) 
-        shift[i]=MapleToInteger64(kv,MapleListSelect(kv,maple_shift,i+1));
+ ALGEB maple_shift = args[1];
+ slong shift[m];
+ for (ulong i = 0; i < m; i++) 
+    shift[i]=MapleToInteger64(kv,MapleListSelect(kv,maple_shift,i+1));
 
-    ulong order = MapleToInteger64(kv,args[3]);
+ulong order = MapleToInteger64(kv,args[3]);
 
 
     // appromimant computation using PML 
@@ -265,11 +265,11 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
     //tt = clock();
 
 
-    if (strcmp(MapleToString(kv,args[5]),"MBasis") ==0) 
-        nmod_poly_mat_mbasis(M, shift, Vdiff, order); 
-    else 
-        nmod_poly_mat_pmbasis(M, shift, Vdiff, order); 
-   
+if (strcmp(MapleToString(kv,args[5]),"MBasis") ==0) 
+    nmod_poly_mat_mbasis(M, shift, Vdiff, order); 
+else 
+nmod_poly_mat_pmbasis(M, shift, Vdiff, order); 
+
 
    //t = (double)(clock()-tt) / CLOCKS_PER_SEC;
 
@@ -279,25 +279,25 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
 
 
    // Construction of the result [M, dct]
-   ALGEB outdct;
+ALGEB outdct;
 
-   outdct= MapleListAlloc(kv,m);
+outdct= MapleListAlloc(kv,m);
 
-   for (slong i = 1; i <= m; i++) 
-        MapleListAssign(kv,outdct,i, ToMapleInteger(kv,shift[i-1]));
-    
-   ALGEB res= MapleListAlloc(kv,2);
-   MapleListAssign(kv,res,1,nmod_poly_mat_to_algeb(kv,M));
-   MapleListAssign(kv,res,2,outdct);
+for (slong i = 1; i <= m; i++) 
+    MapleListAssign(kv,outdct,i, ToMapleInteger(kv,shift[i-1]));
 
-   return res;
+ALGEB res= MapleListAlloc(kv,2);
+MapleListAssign(kv,res,1,nmod_poly_mat_to_algeb(kv,M));
+MapleListAssign(kv,res,2,outdct);
+
+return res;
 
 }
 
 
 /**********************************************************
  * 
- * modulo matrix polynomial mbasis  
+ * modulo polynomial matrix mbasis  
  * 
  *  ALGEB args[1]: shift
  *        args[2]: matrix polynomial, vector entries 
@@ -317,12 +317,12 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
 
 // Row basis, how to specify ? 
 
- ALGEB pm_matrix_mbasis(MKernelVector kv, ALGEB *args){
+ALGEB pm_matrix_mbasis(MKernelVector kv, ALGEB *args){
 
 
-   double t = 0.0;
-   clock_t tt;
-  
+   //double t = 0.0;
+   //clock_t tt;
+
 
    ALGEB vectmat=args[2];
 
@@ -346,31 +346,31 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
    for (ulong i = 0; i < m; i++) 
       shift[i]=MapleToInteger64(kv,MapleListSelect(kv,maple_shift,i+1));
 
-   ulong order = MapleToInteger64(kv,args[3]);
+  ulong order = MapleToInteger64(kv,args[3]);
 
 
-   tt = clock();
+  //tt = clock();
 
-   nmod_poly_mat_mbasis(M, shift, A, order);
+  nmod_poly_mat_mbasis(M, shift, A, order);
    //mbasis(M, res_shift, A, order, shift);
 
-   t = (double)(clock()-tt) / CLOCKS_PER_SEC;
-   MapleALGEB_Printf(kv, " ++++  Time mbasis %f ms\n", ToMapleFloat(kv,t*1000));
+  //t = (double)(clock()-tt) / CLOCKS_PER_SEC;
+  //MapleALGEB_Printf(kv, " ++++  Time mbasis %f ms\n", ToMapleFloat(kv,t*1000));
 
 
-   ALGEB outdct;
+  ALGEB outdct;
 
-   outdct= MapleListAlloc(kv,m);
+  outdct= MapleListAlloc(kv,m);
 
-   for (slong i = 1; i <= m; i++) 
-        MapleListAssign(kv,outdct,i, ToMapleInteger(kv,shift[i-1]));
+  for (slong i = 1; i <= m; i++) 
+    MapleListAssign(kv,outdct,i, ToMapleInteger(kv,shift[i-1]));
 
-    
-   ALGEB res= MapleListAlloc(kv,2);
-   MapleListAssign(kv,res,1,nmod_poly_mat_to_algeb(kv,M));
-   MapleListAssign(kv,res,2,outdct);
 
-   return res;
+ALGEB res= MapleListAlloc(kv,2);
+MapleListAssign(kv,res,1,nmod_poly_mat_to_algeb(kv,M));
+MapleListAssign(kv,res,2,outdct);
+
+return res;
 
 }
 
@@ -397,12 +397,12 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
 
 // Row basis, how to specify ? 
 
- ALGEB pm_matrix_pmbasis(MKernelVector kv, ALGEB *args){
+ALGEB pm_matrix_pmbasis(MKernelVector kv, ALGEB *args){
 
 
    double t = 0.0;
    clock_t tt;
-  
+
 
    ALGEB vectmat=args[2];
 
@@ -426,31 +426,31 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
    for (ulong i = 0; i < m; i++) 
       shift[i]=MapleToInteger64(kv,MapleListSelect(kv,maple_shift,i+1));
 
-   ulong order = MapleToInteger64(kv,args[3]);
+  ulong order = MapleToInteger64(kv,args[3]);
 
 
-   tt = clock();
+  tt = clock();
 
-   nmod_poly_mat_pmbasis(M, shift, A, order);
+  nmod_poly_mat_pmbasis(M, shift, A, order);
    //mbasis(M, res_shift, A, order, shift);
 
-   t = (double)(clock()-tt) / CLOCKS_PER_SEC;
-   MapleALGEB_Printf(kv, " ++++  Time pmbasis %f ms\n", ToMapleFloat(kv,t*1000));
+  t = (double)(clock()-tt) / CLOCKS_PER_SEC;
+  MapleALGEB_Printf(kv, " ++++  Time pmbasis %f ms\n", ToMapleFloat(kv,t*1000));
 
 
-   ALGEB outdct;
+  ALGEB outdct;
 
-   outdct= MapleListAlloc(kv,m);
+  outdct= MapleListAlloc(kv,m);
 
-   for (slong i = 1; i <= m; i++) 
-        MapleListAssign(kv,outdct,i, ToMapleInteger(kv,shift[i-1]));
+  for (slong i = 1; i <= m; i++) 
+    MapleListAssign(kv,outdct,i, ToMapleInteger(kv,shift[i-1]));
 
-    
-   ALGEB res= MapleListAlloc(kv,2);
-   MapleListAssign(kv,res,1,nmod_poly_mat_to_algeb(kv,M));
-   MapleListAssign(kv,res,2,outdct);
 
-   return res;
+ALGEB res= MapleListAlloc(kv,2);
+MapleListAssign(kv,res,1,nmod_poly_mat_to_algeb(kv,M));
+MapleListAssign(kv,res,2,outdct);
+
+return res;
 
 }
 
@@ -464,6 +464,111 @@ ALGEB pm_diff_mbasis(MKernelVector kv, ALGEB *args){
 
 //         nmod_poly_set_coeff_ui(p, ), 
 //            MapleToInteger64(kv,MapleListSelect(kv,coeffs,2*i+2)));
+
+
+
+/**********************************************************
+ * 
+ * modulo polynomial matrix weak Popov form   
+ * 
+ * ++++++++ TODO COMMENT 
+ * 
+ *  ALGEB args[1]: matrix polynomial, vector entries 
+ *        args[2]: shift 
+ *        args[3]: modulus 
+ * 
+ *  Returns M,dct 
+ *    M: a polynomial matrix, list entries 
+ *    dct: the out defects  
+ * 
+ *     !!! Be careful with the sign either 
+ *         defect (e.g. in gfun) or shifts = -dct in pml
+ * 
+ * 
+ ***********************************************************/
+
+
+// SEE WHICH ENTRIES
+
+ALGEB pm_weakpopov(MKernelVector kv, ALGEB *args){
+
+
+   //double t = 0.0;
+   //clock_t tt;
+
+
+    ALGEB vectmat=args[1];
+
+    ulong modulus = MapleToInteger64(kv,args[3]);
+
+    nmod_poly_mat_t A;
+
+    get_nmod_poly_mat(A, modulus, kv, vectmat);
+
+
+    ALGEB maple_shift = args[2];
+
+    slong m = A ->c;
+
+    slong shift[m];
+
+    for (ulong i = 0; i < m; i++) 
+        shift[i]=MapleToInteger64(kv,MapleListSelect(kv,maple_shift,i+1));
+
+
+    //MapleALGEB_Printf(kv, " ++++ %d\n ", ToMapleInteger(kv,shift[0]));
+
+    slong n = A ->r;
+    slong pivind[n];
+
+    nmod_poly_mat_ordered_weak_popov_iter(A, shift, NULL, pivind, NULL, ROW_LOWER);
+
+
+   // nmod_poly_mat_t M;
+
+   // nmod_poly_mat_init(M, m, m, modulus); 
+
+   // //slong res_shift[m];
+
+   // ALGEB maple_shift = args[1];
+
+   // ulong order = MapleToInteger64(kv,args[3]);
+
+   // tt = clock();
+
+   // nmod_poly_mat_pmbasis(M, shift, A, order);
+   // //mbasis(M, res_shift, A, order, shift);
+
+   // t = (double)(clock()-tt) / CLOCKS_PER_SEC;
+   // MapleALGEB_Printf(kv, " ++++  Time pmbasis %f ms\n", ToMapleFloat(kv,t*1000));
+
+
+   // ALGEB outdct;
+
+   // outdct= MapleListAlloc(kv,m);
+
+   // for (slong i = 1; i <= m; i++) 
+   //      MapleListAssign(kv,outdct,i, ToMapleInteger(kv,shift[i-1]));
+
+
+    ALGEB res= MapleListAlloc(kv,1);
+    MapleListAssign(kv,res,1,nmod_poly_mat_to_algeb(kv,A));
+
+    return res;
+
+}
+
+//ALGEB coeffs = args[1]; // Work with coeffs in input? 
+
+//     M_INT l = MapleToInteger64(kv,args[2]);
+
+//     MapleALGEB_Printf(kv, " Length %a", ToMapleInteger(kv,l));
+
+//     for (M_INT i=0; i<l; i++) {
+
+//         nmod_poly_set_coeff_ui(p, ), 
+//            MapleToInteger64(kv,MapleListSelect(kv,coeffs,2*i+2)));
+
 
 
 #endif

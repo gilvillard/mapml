@@ -118,6 +118,21 @@ ALGEB pm_matrix_mbasis(MKernelVector kv, ALGEB *args);
 ALGEB pm_matrix_pmbasis(MKernelVector kv, ALGEB *args);
 
 
+/**********************************************************
+ * 
+ * modulo polynomial matrix weak Popov form   
+ * 
+ * ++++++++ TODO COMMENT
+ * 
+ *  
+ * 
+ ***********************************************************/
+
+
+// SEE WHICH ENTRIES
+
+ ALGEB pm_weakpopov(MKernelVector kv, ALGEB *args);
+
 #endif
 
 /* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
